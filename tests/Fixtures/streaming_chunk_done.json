@@ -1,0 +1,13 @@
+{
+    "id": "chatcmpl-stream123",
+    "object": "chat.completion.chunk",
+    "created": 1704067400,
+    "model": "grok-3",
+    "choices": [
+        {
+            "index": 0,
+            "delta": {},
+            "finish_reason": "stop"
+        }
+    ]
+}
