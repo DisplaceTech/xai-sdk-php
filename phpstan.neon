@@ -1,0 +1,80 @@
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+    level: 8
+
+    paths:
+        - src
+        - tests
+
+    excludePaths:
+        - tests/Fixtures
+
+    # PHPStan 2.0 strict type checking
+    reportUnmatchedIgnoredErrors: false
+
+    # Exception handling - SDK follows PHP convention of runtime exceptions
+    exceptions:
+        check:
+            missingCheckedExceptionInThrows: false
+            tooWideThrowType: false
+        uncheckedExceptionClasses:
+            - 'LogicException'
+            - 'RuntimeException'
+            - 'InvalidArgumentException'
+            - 'JsonException'
+
+    # Ignore specific patterns for SDK development
+    ignoreErrors:
+        # PHPUnit assertions are static methods called dynamically via $this
+        -
+            identifier: staticMethod.dynamicCall
+            path: tests/
+
+        # Test assertions often have redundant type narrowing for explicitness
+        -
+            identifier: method.alreadyNarrowedType
+            path: tests/
+
+        # Short ternary in tests is fine for conciseness
+        -
+            identifier: ternary.shortNotAllowed
+            path: tests/
+
+        # OpenTelemetry SDK types are complex and version-dependent
+        # Telemetry is optional and requires runtime checks
+        -
+            path: src/Telemetry/Telemetry.php
+            message: '#constructor invoked with|expects OpenTelemetry|call to an undefined method|Instantiated class OpenTelemetry#i'
+
+        # NoOp classes implement OpenTelemetry interfaces - can't add value types to inherited iterables
+        -
+            identifier: missingType.iterableValue
+            path: src/Telemetry/
+
+        # Properties used for debugging/future expansion
+        -
+            identifier: property.onlyWritten
+            path: src/Streaming/
+
+        # Stream eof() and null checks are runtime-dependent, not static analysis friendly
+        -
+            identifier: booleanNot.alwaysTrue
+            path: src/Http/StreamingResponse.php
+
+        -
+            identifier: notIdentical.alwaysTrue
+            path: src/Streaming/StreamHandler.php
+
+        # Iterator::current() nullable return is intentional - call valid() first
+        -
+            identifier: method.childReturnType
+            path: src/Streaming/StreamIterator.php
+
+    # Parallel processing
+    parallel:
+        maximumNumberOfProcesses: 8

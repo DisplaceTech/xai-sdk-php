@@ -1,0 +1,107 @@
+{
+    "name": "displace/xai-sdk-php",
+    "description": "The official PHP SDK for xAI's APIs - full parity with the Python SDK",
+    "type": "library",
+    "license": "Apache-2.0",
+    "keywords": [
+        "xai",
+        "grok",
+        "ai",
+        "sdk",
+        "api",
+        "llm",
+        "chat",
+        "completion",
+        "streaming"
+    ],
+    "authors": [
+        {
+            "name": "Displace Technologies, LLC",
+            "email": "opensource@displace.tech"
+        }
+    ],
+    "homepage": "https://github.com/DisplaceTech/xai-sdk-php",
+    "support": {
+        "issues": "https://github.com/DisplaceTech/xai-sdk-php/issues",
+        "source": "https://github.com/DisplaceTech/xai-sdk-php"
+    },
+    "require": {
+        "php": "^8.4",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "guzzlehttp/guzzle": "^7.8",
+        "guzzlehttp/psr7": "^2.6",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^2.0",
+        "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "mockery/mockery": "^1.6",
+        "open-telemetry/sdk": "^1.10",
+        "php-http/mock-client": "^1.6",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^11.4",
+        "symfony/var-dumper": "^7.1"
+    },
+    "suggest": {
+        "open-telemetry/sdk": "Required for telemetry support (^1.0)",
+        "open-telemetry/exporter-otlp": "Required for OTLP telemetry export (^1.0)"
+    },
+    "autoload": {
+        "psr-4": {
+            "Displace\\XaiSdk\\": "src/"
+        },
+        "files": [
+            "src/Chat/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Displace\\XaiSdk\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "stan": "phpstan analyse --memory-limit=512M",
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-html build/coverage/html --coverage-clover build/coverage/clover.xml",
+        "test:unit": "phpunit --testsuite Unit",
+        "test:integration": "phpunit --testsuite Integration",
+        "qa": [
+            "@cs:check",
+            "@stan",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "cs:check": "Check code style against PSR-12 rules",
+        "cs:fix": "Fix code style issues automatically",
+        "stan": "Run static analysis with PHPStan (level 8)",
+        "test": "Run all tests",
+        "test:coverage": "Run tests with code coverage report",
+        "test:unit": "Run unit tests only",
+        "test:integration": "Run integration tests only",
+        "qa": "Run all quality assurance checks (CS, Stan, Tests)"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        },
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0-dev"
+        }
+    }
+}

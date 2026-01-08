@@ -1,0 +1,44 @@
+{
+    "object": "list",
+    "data": [
+        {
+            "id": "grok-3",
+            "object": "model",
+            "created": 1700000000,
+            "owned_by": "xai",
+            "context_length": 128000,
+            "capabilities": {
+                "chat": true,
+                "vision": true,
+                "function_calling": true,
+                "streaming": true
+            }
+        },
+        {
+            "id": "grok-3-mini",
+            "object": "model",
+            "created": 1700000000,
+            "owned_by": "xai",
+            "context_length": 128000,
+            "capabilities": {
+                "chat": true,
+                "vision": false,
+                "function_calling": true,
+                "streaming": true
+            }
+        },
+        {
+            "id": "grok-vision",
+            "object": "model",
+            "created": 1700000000,
+            "owned_by": "xai",
+            "context_length": 32000,
+            "capabilities": {
+                "chat": true,
+                "vision": true,
+                "function_calling": false,
+                "streaming": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,81 @@
+# Dependencies
+/vendor/
+
+# Composer
+composer.phar
+composer.lock
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.bak
+
+# PHP CS Fixer
+.php-cs-fixer.cache
+
+# PHPUnit
+.phpunit.cache/
+.phpunit.result.cache
+phpunit.xml.bak
+
+# PHPStan
+phpstan.neon.bak
+
+# Build artifacts
+/build/
+/dist/
+
+# Code coverage reports
+coverage/
+.coverage/
+*.lcov
+clover.xml
+coverage.xml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+*.log
+logs/
+
+# Test output
+tests/output/
+
+# Generated files
+*.generated.php
+
+# Temporary files
+/tmp/
+/temp/
+*.tmp
+
+# Package archives
+*.tar
+*.tar.gz
+*.zip
+*.phar
+
+# Documentation build
+/docs/_build/
+
+# Xdebug profiler output
+cachegrind.out.*
+xdebug.log
+
+# Project specific
+/xai-sdk-python/
+spec.md
+instructions.md

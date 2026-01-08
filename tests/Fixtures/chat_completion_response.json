@@ -1,0 +1,21 @@
+{
+    "id": "chatcmpl-abc123",
+    "object": "chat.completion",
+    "created": 1704067200,
+    "model": "grok-3",
+    "choices": [
+        {
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": "Hello! I'm Grok, an AI assistant created by xAI. How can I help you today?"
+            },
+            "finish_reason": "stop"
+        }
+    ],
+    "usage": {
+        "prompt_tokens": 15,
+        "completion_tokens": 20,
+        "total_tokens": 35
+    }
+}

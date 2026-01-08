@@ -1,0 +1,31 @@
+{
+    "id": "chatcmpl-def456",
+    "object": "chat.completion",
+    "created": 1704067300,
+    "model": "grok-3",
+    "choices": [
+        {
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                    {
+                        "id": "call_abc123",
+                        "type": "function",
+                        "function": {
+                            "name": "get_weather",
+                            "arguments": "{\"location\": \"New York\", \"units\": \"fahrenheit\"}"
+                        }
+                    }
+                ]
+            },
+            "finish_reason": "tool_calls"
+        }
+    ],
+    "usage": {
+        "prompt_tokens": 50,
+        "completion_tokens": 25,
+        "total_tokens": 75
+    }
+}
