@@ -45,8 +45,8 @@
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^11.4",
-        "symfony/var-dumper": "^7.1"
+        "phpunit/phpunit": "^11.4 || ^12.0",
+        "symfony/var-dumper": "^7.1 || ^8.0"
     },
     "suggest": {
         "open-telemetry/sdk": "Required for telemetry support (^1.0)",
@@ -91,7 +91,8 @@
     },
     "config": {
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         },
         "sort-packages": true,
         "preferred-install": "dist",
