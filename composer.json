@@ -46,7 +46,7 @@
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^11.4",
-        "symfony/var-dumper": "^7.1"
+        "symfony/var-dumper": "^7.1 || ^8.0"
     },
     "suggest": {
         "open-telemetry/sdk": "Required for telemetry support (^1.0)",
