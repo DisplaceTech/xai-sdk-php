@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://avatars.githubusercontent.com/u/130314967?s=200&v=4" alt="xAI Logo" width="100" />
   <h1>xAI PHP SDK</h1>
-  <p>The official PHP SDK for xAI's APIs</p>
+  <p>An unofficial PHP SDK for xAI's APIs</p>
   <a href="https://packagist.org/packages/displace/xai-sdk-php">
     <img src="https://img.shields.io/packagist/v/displace/xai-sdk-php" alt="Packagist Version" />
   </a>
