@@ -18,7 +18,6 @@ namespace Displace\XaiSdk\Telemetry;
 use OpenTelemetry\API\Trace\SpanBuilderInterface;
 use OpenTelemetry\API\Trace\SpanContextInterface;
 use OpenTelemetry\API\Trace\SpanInterface;
-use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\Context\ContextInterface;
 
 /**

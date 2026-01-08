@@ -45,6 +45,7 @@ class InvalidArgumentException extends XaiException
      * Creates an exception for a missing required parameter.
      *
      * @param string $parameter The name of the missing parameter
+     *
      * @return self
      */
     public static function missingRequired(string $parameter): self
@@ -61,6 +62,7 @@ class InvalidArgumentException extends XaiException
      * @param string $parameter The name of the parameter
      * @param string $expected The expected type
      * @param string $actual The actual type provided
+     *
      * @return self
      */
     public static function invalidType(string $parameter, string $expected, string $actual): self
@@ -81,6 +83,7 @@ class InvalidArgumentException extends XaiException
      *
      * @param string $parameter The name of the parameter
      * @param string $reason The reason the value is invalid
+     *
      * @return self
      */
     public static function invalidValue(string $parameter, string $reason): self
@@ -95,6 +98,7 @@ class InvalidArgumentException extends XaiException
      * Creates an exception for empty required value.
      *
      * @param string $parameter The name of the parameter
+     *
      * @return self
      */
     public static function emptyValue(string $parameter): self

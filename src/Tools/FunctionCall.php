@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tools;
 
+use JsonException;
+
 /**
  * Represents the function details within a tool call.
  *
@@ -32,13 +34,30 @@ readonly class FunctionCall
     public function __construct(
         public string $name,
         public string $arguments,
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a FunctionCall from an array representation.
+     *
+     * @param array{name: string, arguments: string} $data The array data.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            name: $data['name'],
+            arguments: $data['arguments'],
+        );
+    }
 
     /**
      * Decodes the arguments as an associative array.
      *
+     * @throws JsonException If the arguments are not valid JSON.
+     *
      * @return array<string, mixed> The decoded arguments.
-     * @throws \JsonException If the arguments are not valid JSON.
      */
     public function getDecodedArguments(): array
     {
@@ -56,19 +75,5 @@ readonly class FunctionCall
             'name' => $this->name,
             'arguments' => $this->arguments,
         ];
-    }
-
-    /**
-     * Creates a FunctionCall from an array representation.
-     *
-     * @param array{name: string, arguments: string} $data The array data.
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            name: $data['name'],
-            arguments: $data['arguments'],
-        );
     }
 }

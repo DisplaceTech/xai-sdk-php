@@ -22,7 +22,7 @@ final class NoOpScopeTest extends TestCase
 {
     protected function setUp(): void
     {
-        if (!interface_exists(\OpenTelemetry\Context\ScopeInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\Context\ScopeInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
     }

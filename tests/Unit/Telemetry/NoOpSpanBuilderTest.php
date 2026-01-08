@@ -26,7 +26,7 @@ final class NoOpSpanBuilderTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\SpanBuilderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\SpanBuilderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 

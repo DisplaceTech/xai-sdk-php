@@ -36,7 +36,7 @@ final class UsageTest extends TestCase
             promptTokens: 100,
             completionTokens: 50,
             totalTokens: 150,
-            reasoningTokens: 20
+            reasoningTokens: 20,
         );
 
         $this->assertSame(100, $usage->promptTokens);

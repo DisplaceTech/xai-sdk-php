@@ -39,27 +39,14 @@ readonly class SearchResult
         public int $chunkIndex = 0,
         public array $metadata = [],
         public ?string $filename = null,
-    ) {}
-
-    /**
-     * Gets a preview of the chunk content.
-     *
-     * @param int $maxLength Maximum length of the preview.
-     * @return string The preview text.
-     */
-    public function getPreview(int $maxLength = 200): string
-    {
-        if (mb_strlen($this->chunkContent) <= $maxLength) {
-            return $this->chunkContent;
-        }
-
-        return mb_substr($this->chunkContent, 0, $maxLength) . '...';
+    ) {
     }
 
     /**
      * Creates a SearchResult from an API response array.
      *
      * @param array<string, mixed> $data The match data.
+     *
      * @return self
      */
     public static function fromArray(array $data): self
@@ -73,5 +60,21 @@ readonly class SearchResult
             metadata: $data['metadata'] ?? [],
             filename: $data['filename'] ?? null,
         );
+    }
+
+    /**
+     * Gets a preview of the chunk content.
+     *
+     * @param int $maxLength Maximum length of the preview.
+     *
+     * @return string The preview text.
+     */
+    public function getPreview(int $maxLength = 200): string
+    {
+        if (mb_strlen($this->chunkContent) <= $maxLength) {
+            return $this->chunkContent;
+        }
+
+        return mb_substr($this->chunkContent, 0, $maxLength) . '...';
     }
 }

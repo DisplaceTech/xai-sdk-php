@@ -52,13 +52,15 @@ class TokenizerResource
      */
     public function __construct(
         private readonly HttpClient $httpClient,
-    ) {}
+    ) {
+    }
 
     /**
      * Tokenizes text using the specified model.
      *
      * @param string $text The text to tokenize.
      * @param string $model The model to use for tokenization.
+     *
      * @return array<Token> The list of tokens.
      */
     public function tokenizeText(string $text, string $model = 'grok-3'): array
@@ -74,8 +76,8 @@ class TokenizerResource
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         return array_map(
-            fn(array $tokenData) => Token::fromArray($tokenData),
-            $data['tokens'] ?? $data['data'] ?? []
+            fn (array $tokenData) => Token::fromArray($tokenData),
+            $data['tokens'] ?? $data['data'] ?? [],
         );
     }
 
@@ -86,11 +88,13 @@ class TokenizerResource
      *
      * @param string $text The text to count tokens for.
      * @param string $model The model to use for tokenization.
+     *
      * @return int The number of tokens.
      */
     public function countTokens(string $text, string $model = 'grok-3'): int
     {
         $tokens = $this->tokenizeText($text, $model);
+
         return count($tokens);
     }
 
@@ -99,13 +103,14 @@ class TokenizerResource
      *
      * @param array<string> $texts The texts to tokenize.
      * @param string $model The model to use for tokenization.
+     *
      * @return array<array<Token>> An array of token arrays, one per input text.
      */
     public function tokenizeBatch(array $texts, string $model = 'grok-3'): array
     {
         return array_map(
-            fn(string $text) => $this->tokenizeText($text, $model),
-            $texts
+            fn (string $text) => $this->tokenizeText($text, $model),
+            $texts,
         );
     }
 
@@ -114,6 +119,7 @@ class TokenizerResource
      *
      * @param array<int> $tokenIds The token IDs to decode.
      * @param string $model The model to use for decoding.
+     *
      * @return string The decoded text.
      */
     public function decode(array $tokenIds, string $model = 'grok-3'): string

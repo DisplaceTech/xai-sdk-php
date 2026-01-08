@@ -33,7 +33,8 @@ readonly class Usage
         public int $completionTokens = 0,
         public int $totalTokens = 0,
         public int $reasoningTokens = 0,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a Usage instance from an API response array.

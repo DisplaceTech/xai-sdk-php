@@ -43,13 +43,14 @@ use Displace\XaiSdk\Responses\ImageResponse;
  */
 class ImageResource
 {
-    private const ENDPOINT = '/images/generations';
-
     /**
      * Image format options.
      */
     public const FORMAT_URL = 'url';
+
     public const FORMAT_BASE64 = 'b64_json';
+
+    private const ENDPOINT = '/images/generations';
 
     /**
      * Creates a new ImageResource instance.
@@ -58,7 +59,8 @@ class ImageResource
      */
     public function __construct(
         private readonly HttpClient $httpClient,
-    ) {}
+    ) {
+    }
 
     /**
      * Generates a single image from a prompt.
@@ -151,8 +153,8 @@ class ImageResource
         $created = $data['created'] ?? time();
 
         return array_map(
-            fn(array $imageData) => ImageResponse::fromArray($imageData, $created),
-            $data['data'] ?? []
+            fn (array $imageData) => ImageResponse::fromArray($imageData, $created),
+            $data['data'] ?? [],
         );
     }
 
@@ -162,6 +164,7 @@ class ImageResource
      * @param string $prompt The text prompt.
      * @param string $model The image model to use.
      * @param string $imageFormat The response format ('url' or 'base64').
+     *
      * @return ImageResponse
      */
     public function sample(
@@ -170,6 +173,7 @@ class ImageResource
         string $imageFormat = 'url',
     ): ImageResponse {
         $format = $imageFormat === 'base64' ? self::FORMAT_BASE64 : self::FORMAT_URL;
+
         return $this->generate($prompt, $model, $format);
     }
 
@@ -180,6 +184,7 @@ class ImageResource
      * @param int $n Number of images to generate.
      * @param string $model The image model to use.
      * @param string $imageFormat The response format ('url' or 'base64').
+     *
      * @return array<ImageResponse>
      */
     public function sampleBatch(
@@ -189,6 +194,7 @@ class ImageResource
         string $imageFormat = 'url',
     ): array {
         $format = $imageFormat === 'base64' ? self::FORMAT_BASE64 : self::FORMAT_URL;
+
         return $this->generateBatch($prompt, $n, $model, $format);
     }
 }

@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Chat;
 
-use Displace\XaiSdk\Chat\Messages\AssistantMessage;
 use Displace\XaiSdk\Chat\Messages\Message;
 use Displace\XaiSdk\Exceptions\InvalidArgumentException;
 use Displace\XaiSdk\Resources\ChatResource;
@@ -117,8 +116,10 @@ class Chat
      * or ChatResponse objects from previous interactions.
      *
      * @param Message|ChatResponse $message The message or response to append.
-     * @return $this For method chaining.
+     *
      * @throws InvalidArgumentException If the message type is not recognized.
+     *
+     * @return $this For method chaining.
      */
     public function append(Message|ChatResponse $message): self
     {
@@ -139,19 +140,22 @@ class Chat
      * call append() to add it.
      *
      * @param int $n Number of completions to generate (default 1).
-     * @return ChatResponse The model's response.
+     *
      * @throws InvalidArgumentException If no messages are in the conversation.
+     *
+     * @return ChatResponse The model's response.
      */
     public function sample(int $n = 1): ChatResponse
     {
         if ($this->messages === []) {
             throw new InvalidArgumentException(
                 'Cannot sample: No messages in conversation. ' .
-                'Add messages using append() before calling sample().'
+                'Add messages using append() before calling sample().',
             );
         }
 
         $payload = $this->buildPayload();
+
         if ($n > 1) {
             $payload['n'] = $n;
         }
@@ -165,6 +169,7 @@ class Chat
      * Convenience method for sampling multiple completions at once.
      *
      * @param int $n Number of completions to generate.
+     *
      * @return array<ChatResponse> Array of responses (one per choice).
      */
     public function sampleBatch(int $n): array
@@ -173,7 +178,7 @@ class Chat
 
         // Create a response wrapper for each choice
         return array_map(
-            fn(int $index) => new ChatResponse(
+            fn (int $index) => new ChatResponse(
                 id: $response->id,
                 model: $response->model,
                 created: $response->created,
@@ -181,7 +186,7 @@ class Chat
                 usage: $response->usage,
                 systemFingerprint: $response->systemFingerprint,
             ),
-            array_keys($response->choices)
+            array_keys($response->choices),
         );
     }
 
@@ -192,15 +197,16 @@ class Chat
      * The ChatResponse accumulates as streaming progresses, while StreamChunk
      * contains only the delta for that iteration.
      *
-     * @return Generator<int, array{ChatResponse, StreamChunk}>
      * @throws InvalidArgumentException If no messages are in the conversation.
+     *
+     * @return Generator<int, array{ChatResponse, StreamChunk}>
      */
     public function stream(): Generator
     {
         if ($this->messages === []) {
             throw new InvalidArgumentException(
                 'Cannot stream: No messages in conversation. ' .
-                'Add messages using append() before calling stream().'
+                'Add messages using append() before calling stream().',
             );
         }
 
@@ -223,6 +229,7 @@ class Chat
 
             // Accumulate content
             $accumulatedContent .= $chunk->content;
+
             if ($chunk->reasoningContent !== null) {
                 $accumulatedReasoningContent .= $chunk->reasoningContent;
             }
@@ -231,7 +238,8 @@ class Chat
             if ($chunk->toolCalls !== []) {
                 foreach ($chunk->toolCalls as $toolCallDelta) {
                     $index = $toolCallDelta['index'] ?? 0;
-                    if (!isset($toolCalls[$index])) {
+
+                    if (! isset($toolCalls[$index])) {
                         $toolCalls[$index] = [
                             'id' => $toolCallDelta['id'] ?? '',
                             'type' => 'function',
@@ -241,12 +249,15 @@ class Chat
                             ],
                         ];
                     }
+
                     if (isset($toolCallDelta['id'])) {
                         $toolCalls[$index]['id'] = $toolCallDelta['id'];
                     }
+
                     if (isset($toolCallDelta['function']['name'])) {
                         $toolCalls[$index]['function']['name'] .= $toolCallDelta['function']['name'];
                     }
+
                     if (isset($toolCallDelta['function']['arguments'])) {
                         $toolCalls[$index]['function']['arguments'] .= $toolCallDelta['function']['arguments'];
                     }
@@ -259,7 +270,7 @@ class Chat
                 $accumulatedContent,
                 $accumulatedReasoningContent,
                 array_values($toolCalls),
-                $chunk->finishReason
+                $chunk->finishReason,
             );
 
             yield [$lastResponse, $chunk];
@@ -300,57 +311,75 @@ class Chat
         if ($this->user !== null) {
             $options['user'] = $this->user;
         }
+
         if ($this->maxTokens !== null) {
             $options['max_tokens'] = $this->maxTokens;
         }
+
         if ($this->seed !== null) {
             $options['seed'] = $this->seed;
         }
+
         if ($this->stop !== null) {
             $options['stop'] = $this->stop;
         }
+
         if ($this->temperature !== null) {
             $options['temperature'] = $this->temperature;
         }
+
         if ($this->topP !== null) {
             $options['top_p'] = $this->topP;
         }
+
         if ($this->logprobs !== null) {
             $options['logprobs'] = $this->logprobs;
         }
+
         if ($this->topLogprobs !== null) {
             $options['top_logprobs'] = $this->topLogprobs;
         }
+
         if ($this->tools !== null) {
             $options['tools'] = $this->tools;
         }
+
         if ($this->toolChoice !== null) {
             $options['tool_choice'] = $this->toolChoice;
         }
+
         if ($this->parallelToolCalls !== null) {
             $options['parallel_tool_calls'] = $this->parallelToolCalls;
         }
+
         if ($this->responseFormat !== null) {
             $options['response_format'] = $this->responseFormat;
         }
+
         if ($this->frequencyPenalty !== null) {
             $options['frequency_penalty'] = $this->frequencyPenalty;
         }
+
         if ($this->presencePenalty !== null) {
             $options['presence_penalty'] = $this->presencePenalty;
         }
+
         if ($this->reasoningEffort !== null) {
             $options['reasoning_effort'] = $this->reasoningEffort;
         }
+
         if ($this->searchParameters !== null) {
             $options['search_parameters'] = $this->searchParameters;
         }
+
         if ($this->storeMessages !== null) {
             $options['store_messages'] = $this->storeMessages;
         }
+
         if ($this->previousResponseId !== null) {
             $options['previous_response_id'] = $this->previousResponseId;
         }
+
         if ($this->maxTurns !== null) {
             $options['max_turns'] = $this->maxTurns;
         }
@@ -366,6 +395,7 @@ class Chat
      * @param string $reasoningContent Accumulated reasoning content.
      * @param array<array<string, mixed>> $toolCalls Accumulated tool calls.
      * @param string|null $finishReason The finish reason if complete.
+     *
      * @return ChatResponse
      */
     private function buildAccumulatedResponse(
@@ -373,7 +403,7 @@ class Chat
         string $content,
         string $reasoningContent,
         array $toolCalls,
-        ?string $finishReason
+        ?string $finishReason,
     ): ChatResponse {
         $choice = [
             'index' => 0,

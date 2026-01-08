@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tools;
 
+use InvalidArgumentException;
+
 /**
  * Server-side tool for web search.
  *
@@ -41,9 +43,9 @@ readonly class WebSearch implements ServerSideTool
      * Creates a new WebSearch instance.
      *
      * @param array<string>|null $excludedDomains Domains to exclude from search results.
-     *        A maximum of 5 websites can be excluded. Cannot be used with $allowedDomains.
+     *                                            A maximum of 5 websites can be excluded. Cannot be used with $allowedDomains.
      * @param array<string>|null $allowedDomains Domains to restrict search results to.
-     *        A maximum of 5 websites can be allowed. Cannot be used with $excludedDomains.
+     *                                           A maximum of 5 websites can be allowed. Cannot be used with $excludedDomains.
      * @param bool $enableImageUnderstanding Enable image understanding during web search.
      */
     public function __construct(
@@ -52,8 +54,8 @@ readonly class WebSearch implements ServerSideTool
         public bool $enableImageUnderstanding = false,
     ) {
         if ($excludedDomains !== null && $allowedDomains !== null) {
-            throw new \InvalidArgumentException(
-                'Cannot set both excludedDomains and allowedDomains. Use one or the other.'
+            throw new InvalidArgumentException(
+                'Cannot set both excludedDomains and allowedDomains. Use one or the other.',
             );
         }
     }

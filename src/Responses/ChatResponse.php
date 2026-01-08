@@ -41,7 +41,30 @@ readonly class ChatResponse
         public array $choices,
         public Usage $usage,
         public ?string $systemFingerprint = null,
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a ChatResponse from an API response array.
+     *
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
+    {
+        $choices = array_map(
+            fn (array $choice) => Choice::fromArray($choice),
+            $data['choices'] ?? [],
+        );
+
+        return new self(
+            id: $data['id'] ?? '',
+            model: $data['model'] ?? '',
+            created: new DateTimeImmutable()->setTimestamp($data['created'] ?? time()),
+            choices: $choices,
+            usage: Usage::fromArray($data['usage'] ?? []),
+            systemFingerprint: $data['system_fingerprint'] ?? null,
+        );
+    }
 
     /**
      * Gets the content of the first choice.
@@ -59,6 +82,7 @@ readonly class ChatResponse
         if ($this->choices === []) {
             return null;
         }
+
         return $this->choices[0]->message->reasoningContent;
     }
 
@@ -72,6 +96,7 @@ readonly class ChatResponse
         if ($this->choices === []) {
             return [];
         }
+
         return $this->choices[0]->toolCalls;
     }
 
@@ -83,6 +108,7 @@ readonly class ChatResponse
         if ($this->choices === []) {
             return null;
         }
+
         return $this->choices[0]->finishReason;
     }
 
@@ -98,27 +124,5 @@ readonly class ChatResponse
         }
 
         return $choice->message;
-    }
-
-    /**
-     * Creates a ChatResponse from an API response array.
-     *
-     * @param array<string, mixed> $data
-     */
-    public static function fromArray(array $data): self
-    {
-        $choices = array_map(
-            fn(array $choice) => Choice::fromArray($choice),
-            $data['choices'] ?? []
-        );
-
-        return new self(
-            id: $data['id'] ?? '',
-            model: $data['model'] ?? '',
-            created: (new DateTimeImmutable())->setTimestamp($data['created'] ?? time()),
-            choices: $choices,
-            usage: Usage::fromArray($data['usage'] ?? []),
-            systemFingerprint: $data['system_fingerprint'] ?? null,
-        );
     }
 }

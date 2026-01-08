@@ -28,12 +28,14 @@ use Generator;
 class StreamHandler
 {
     private StreamingResponse $response;
+
     private StreamIterator $iterator;
 
     /** @var array<int, array<string, mixed>> */
     private array $chunks = [];
 
     private string $accumulatedContent = '';
+
     private string $accumulatedReasoningContent = '';
 
     /** @var array<string, mixed>|null */
@@ -43,7 +45,9 @@ class StreamHandler
     private array $toolCalls = [];
 
     private ?string $finishReason = null;
+
     private ?string $responseId = null;
+
     private ?string $model = null;
 
     /**
@@ -55,6 +59,18 @@ class StreamHandler
     {
         $this->response = $response;
         $this->iterator = new StreamIterator($response);
+    }
+
+    /**
+     * Creates a stream handler from a streaming response.
+     *
+     * @param StreamingResponse $response The streaming response
+     *
+     * @return self
+     */
+    public static function fromResponse(StreamingResponse $response): self
+    {
+        return new self($response);
     }
 
     /**
@@ -250,7 +266,7 @@ class StreamHandler
             $index = $delta['index'] ?? 0;
 
             // Initialize tool call if first time seeing this index
-            if (!isset($this->toolCalls[$index])) {
+            if (! isset($this->toolCalls[$index])) {
                 $this->toolCalls[$index] = [
                     'id' => $delta['id'] ?? '',
                     'type' => $delta['type'] ?? 'function',
@@ -279,16 +295,5 @@ class StreamHandler
                 }
             }
         }
-    }
-
-    /**
-     * Creates a stream handler from a streaming response.
-     *
-     * @param StreamingResponse $response The streaming response
-     * @return self
-     */
-    public static function fromResponse(StreamingResponse $response): self
-    {
-        return new self($response);
     }
 }

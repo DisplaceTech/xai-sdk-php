@@ -51,7 +51,7 @@ abstract class TestCase extends PHPUnitTestCase
     {
         $path = $this->getFixturePath($filename);
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             $this->fail("Fixture file not found: {$path}");
         }
 
@@ -63,7 +63,7 @@ abstract class TestCase extends PHPUnitTestCase
 
         $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $this->fail("Fixture file does not contain a valid JSON object: {$path}");
         }
 

@@ -39,7 +39,8 @@ class ChatResource
      */
     public function __construct(
         private readonly HttpClient $httpClient,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a new stateful chat conversation.
@@ -128,6 +129,7 @@ class ChatResource
      * directly for one-off requests.
      *
      * @param array<string, mixed> $payload The request payload.
+     *
      * @return ChatResponse The completion response.
      */
     public function complete(array $payload): ChatResponse
@@ -149,6 +151,7 @@ class ChatResource
      * Returns a StreamingResponse that can be iterated to receive chunks.
      *
      * @param array<string, mixed> $payload The request payload.
+     *
      * @return StreamingResponse The streaming response.
      */
     public function stream(array $payload): StreamingResponse
@@ -162,13 +165,14 @@ class ChatResource
      * @param string $model The model to use.
      * @param array<Message> $messages The conversation messages.
      * @param array<string, mixed> $options Additional options.
+     *
      * @return array<string, mixed> The request payload.
      */
     public function buildPayload(string $model, array $messages, array $options = []): array
     {
         $payload = [
             'model' => $model,
-            'messages' => array_map(fn(Message $m) => $m->toArray(), $messages),
+            'messages' => array_map(fn (Message $m) => $m->toArray(), $messages),
         ];
 
         // Add optional parameters that are set
@@ -203,8 +207,8 @@ class ChatResource
         // Handle tools separately
         if (isset($options['tools']) && $options['tools'] !== []) {
             $payload['tools'] = array_map(
-                fn(Tool $tool) => $tool->toArray(),
-                $options['tools']
+                fn (Tool $tool) => $tool->toArray(),
+                $options['tools'],
             );
         }
 

@@ -18,6 +18,7 @@ namespace Displace\XaiSdk\Tests\Unit\Telemetry;
 use Displace\XaiSdk\Telemetry\NoOpSpan;
 use Displace\XaiSdk\Telemetry\NoOpSpanContext;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 final class NoOpSpanTest extends TestCase
 {
@@ -25,7 +26,7 @@ final class NoOpSpanTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\SpanInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\SpanInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
@@ -102,7 +103,7 @@ final class NoOpSpanTest extends TestCase
 
     public function test_record_exception_returns_self(): void
     {
-        $exception = new \RuntimeException('Test error');
+        $exception = new RuntimeException('Test error');
 
         $result = $this->span->recordException($exception);
 
@@ -111,7 +112,7 @@ final class NoOpSpanTest extends TestCase
 
     public function test_record_exception_with_attributes_returns_self(): void
     {
-        $exception = new \RuntimeException('Test error');
+        $exception = new RuntimeException('Test error');
 
         $result = $this->span->recordException($exception, ['custom' => 'attr']);
 

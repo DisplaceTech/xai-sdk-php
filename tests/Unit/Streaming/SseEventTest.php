@@ -152,7 +152,7 @@ final class SseEventTest extends TestCase
             event: 'message',
             data: '{"test": true}',
             id: 'event-1',
-            retry: 5000
+            retry: 5000,
         );
 
         // Verify readonly by checking property access
@@ -168,7 +168,7 @@ final class SseEventTest extends TestCase
             event: 'chat',
             data: '{"role": "assistant"}',
             id: 'msg-456',
-            retry: 1000
+            retry: 1000,
         );
 
         $this->assertSame('chat', $event->event);

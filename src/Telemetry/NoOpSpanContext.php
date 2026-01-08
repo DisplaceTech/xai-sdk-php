@@ -28,6 +28,38 @@ class NoOpSpanContext implements SpanContextInterface
     /**
      * {@inheritDoc}
      */
+    public static function createFromRemoteParent(
+        string $traceId,
+        string $spanId,
+        int $traceFlags = 0,
+        ?TraceStateInterface $traceState = null,
+    ): SpanContextInterface {
+        return new self();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function getInvalid(): SpanContextInterface
+    {
+        return new self();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function create(
+        string $traceId,
+        string $spanId,
+        int $traceFlags = 0,
+        ?TraceStateInterface $traceState = null,
+    ): SpanContextInterface {
+        return new self();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getTraceId(): string
     {
         return str_repeat('0', 32);
@@ -79,38 +111,6 @@ class NoOpSpanContext implements SpanContextInterface
     public function isSampled(): bool
     {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function createFromRemoteParent(
-        string $traceId,
-        string $spanId,
-        int $traceFlags = 0,
-        ?TraceStateInterface $traceState = null,
-    ): SpanContextInterface {
-        return new self();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getInvalid(): SpanContextInterface
-    {
-        return new self();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function create(
-        string $traceId,
-        string $spanId,
-        int $traceFlags = 0,
-        ?TraceStateInterface $traceState = null,
-    ): SpanContextInterface {
-        return new self();
     }
 
     /**

@@ -151,7 +151,18 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
+      - name: Check for integration tests
+        id: check-tests
+        run: |
+          if find tests/Integration -name "*Test.php" 2>/dev/null | grep -q .; then
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+            echo "No integration tests found, skipping..."
+          fi
+
       - name: Run integration tests
+        if: steps.check-tests.outputs.has_tests == 'true'
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: composer test:integration

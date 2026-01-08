@@ -41,7 +41,8 @@ readonly class StreamChunk
         public ?string $reasoningContent = null,
         public array $toolCalls = [],
         public ?string $finishReason = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a StreamChunk from an API response array.
@@ -56,7 +57,7 @@ readonly class StreamChunk
         return new self(
             id: $data['id'] ?? '',
             model: $data['model'] ?? '',
-            created: (new DateTimeImmutable())->setTimestamp($data['created'] ?? time()),
+            created: new DateTimeImmutable()->setTimestamp($data['created'] ?? time()),
             content: $delta['content'] ?? '',
             reasoningContent: $delta['reasoning_content'] ?? null,
             toolCalls: $delta['tool_calls'] ?? [],

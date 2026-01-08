@@ -48,7 +48,8 @@ class ModelsResource
      */
     public function __construct(
         private readonly HttpClient $httpClient,
-    ) {}
+    ) {
+    }
 
     /**
      * Lists all available models.
@@ -63,8 +64,8 @@ class ModelsResource
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         return array_map(
-            fn(array $modelData) => Model::fromArray($modelData),
-            $data['data'] ?? []
+            fn (array $modelData) => Model::fromArray($modelData),
+            $data['data'] ?? [],
         );
     }
 
@@ -72,6 +73,7 @@ class ModelsResource
      * Retrieves a specific model by ID.
      *
      * @param string $modelId The model ID to retrieve.
+     *
      * @return Model The model information.
      */
     public function retrieve(string $modelId): Model
@@ -95,7 +97,7 @@ class ModelsResource
     {
         return array_filter(
             $this->list(),
-            fn(Model $model) => $model->isLanguageModel()
+            fn (Model $model) => $model->isLanguageModel(),
         );
     }
 
@@ -110,7 +112,7 @@ class ModelsResource
     {
         return array_filter(
             $this->list(),
-            fn(Model $model) => $model->isEmbeddingModel()
+            fn (Model $model) => $model->isEmbeddingModel(),
         );
     }
 
@@ -125,7 +127,7 @@ class ModelsResource
     {
         return array_filter(
             $this->list(),
-            fn(Model $model) => $model->isImageModel()
+            fn (Model $model) => $model->isImageModel(),
         );
     }
 
@@ -133,6 +135,7 @@ class ModelsResource
      * Gets a specific language model by name.
      *
      * @param string $name The model name.
+     *
      * @return Model The model information.
      */
     public function getLanguageModel(string $name): Model
@@ -165,6 +168,7 @@ class ModelsResource
      * Gets a specific embedding model by name.
      *
      * @param string $name The model name.
+     *
      * @return Model The model information.
      */
     public function getEmbeddingModel(string $name): Model
@@ -196,6 +200,7 @@ class ModelsResource
      * Gets a specific image generation model by name.
      *
      * @param string $name The model name.
+     *
      * @return Model The model information.
      */
     public function getImageGenerationModel(string $name): Model

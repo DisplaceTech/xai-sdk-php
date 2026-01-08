@@ -31,7 +31,8 @@ readonly class AssistantMessage implements Message
         public string $content,
         public array $toolCalls = [],
         public ?string $reasoningContent = null,
-    ) {}
+    ) {
+    }
 
     public function getRole(): string
     {

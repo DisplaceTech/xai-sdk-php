@@ -37,7 +37,7 @@ final class ChatResponseTest extends TestCase
             created: $created,
             choices: [$choice],
             usage: $usage,
-            systemFingerprint: 'fp_123'
+            systemFingerprint: 'fp_123',
         );
 
         $this->assertSame('chatcmpl-abc123', $response->id);
@@ -57,7 +57,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [$choice],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $this->assertSame('Hello, world!', $response->getContent());
@@ -70,7 +70,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $this->assertSame('', $response->getContent());
@@ -85,7 +85,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [$choice],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $this->assertSame('Reasoning trace', $response->getReasoningContent());
@@ -103,7 +103,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [$choice],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $this->assertSame($toolCalls, $response->getToolCalls());
@@ -118,7 +118,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [$choice],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $this->assertSame('stop', $response->getFinishReason());
@@ -133,7 +133,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [$choice],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $result = $response->toMessage();
@@ -149,7 +149,7 @@ final class ChatResponseTest extends TestCase
             model: 'grok-3',
             created: new DateTimeImmutable(),
             choices: [],
-            usage: new Usage()
+            usage: new Usage(),
         );
 
         $result = $response->toMessage();

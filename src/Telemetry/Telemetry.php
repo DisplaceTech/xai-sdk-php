@@ -15,14 +15,16 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Telemetry;
 
+use InvalidArgumentException;
 use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\API\Trace\TracerProviderInterface;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use OpenTelemetry\SDK\Resource\ResourceInfoFactory;
+use OpenTelemetry\SDK\Trace\SpanExporter\ConsoleSpanExporter;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
 use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
-use OpenTelemetry\SDK\Trace\SpanExporter\ConsoleSpanExporter;
 use OpenTelemetry\SDK\Trace\TracerProvider;
+use RuntimeException;
 
 /**
  * Telemetry configuration and tracing setup for the xAI SDK.
@@ -51,7 +53,6 @@ use OpenTelemetry\SDK\Trace\TracerProvider;
  *
  * // Now all SDK operations will emit traces to the console
  * ```
- *
  * @example OTLP exporter for production:
  * ```php
  * use Displace\XaiSdk\Telemetry\Telemetry;
@@ -66,16 +67,18 @@ use OpenTelemetry\SDK\Trace\TracerProvider;
 class Telemetry
 {
     public const SDK_NAME = 'xai-sdk-php';
+
     public const SDK_VERSION = '1.0.0';
 
     private TracerProviderInterface $provider;
+
     private bool $isOwned = false;
 
     /**
      * Creates a new Telemetry instance.
      *
      * @param TracerProviderInterface|null $provider Optional custom TracerProvider.
-     *        If null, a new provider will be created with xAI SDK metadata.
+     *                                               If null, a new provider will be created with xAI SDK metadata.
      */
     public function __construct(?TracerProviderInterface $provider = null)
     {
@@ -102,6 +105,7 @@ class Telemetry
      * Gets a tracer with the xAI SDK instrumentation scope.
      *
      * @param string $name Optional tracer name override.
+     *
      * @return TracerInterface
      */
     public function getTracer(string $name = self::SDK_NAME): TracerInterface
@@ -118,16 +122,17 @@ class Telemetry
      *
      * Traces are printed to stdout in human-readable format.
      *
+     * @throws RuntimeException If OpenTelemetry SDK is not installed.
+     *
      * @return $this
-     * @throws \RuntimeException If OpenTelemetry SDK is not installed.
      */
     public function setupConsoleExporter(): self
     {
         $this->ensureOpenTelemetryAvailable();
 
-        if (!$this->provider instanceof TracerProvider) {
-            throw new \RuntimeException(
-                'Cannot add span processor to custom provider. Use TracerProvider instance.'
+        if (! $this->provider instanceof TracerProvider) {
+            throw new RuntimeException(
+                'Cannot add span processor to custom provider. Use TracerProvider instance.',
             );
         }
 
@@ -150,16 +155,18 @@ class Telemetry
      *
      * @param string|null $endpoint OTLP endpoint URL. Falls back to environment variable.
      * @param array<string, string> $headers Authentication headers. Merged with environment.
+     *
+     * @throws RuntimeException If required packages are not installed.
+     *
      * @return $this
-     * @throws \RuntimeException If required packages are not installed.
      */
     public function setupOtlpExporter(?string $endpoint = null, array $headers = []): self
     {
         $this->ensureOpenTelemetryAvailable();
 
-        if (!$this->provider instanceof TracerProvider) {
-            throw new \RuntimeException(
-                'Cannot add span processor to custom provider. Use TracerProvider instance.'
+        if (! $this->provider instanceof TracerProvider) {
+            throw new RuntimeException(
+                'Cannot add span processor to custom provider. Use TracerProvider instance.',
             );
         }
 
@@ -172,89 +179,6 @@ class Telemetry
         $this->provider->addSpanProcessor($processor);
 
         return $this;
-    }
-
-    /**
-     * Creates the default TracerProvider with xAI SDK resource info.
-     *
-     * @return TracerProvider
-     */
-    private function createDefaultProvider(): TracerProvider
-    {
-        $this->ensureOpenTelemetryAvailable();
-
-        $resource = ResourceInfoFactory::defaultResource()->merge(
-            ResourceInfo::create([
-                'service.name' => self::SDK_NAME,
-                'service.version' => self::SDK_VERSION,
-            ])
-        );
-
-        return new TracerProvider([], null, $resource);
-    }
-
-    /**
-     * Creates an OTLP exporter based on protocol.
-     *
-     * @param string $protocol The protocol ('grpc' or 'http/protobuf').
-     * @param string|null $endpoint The endpoint URL.
-     * @param array<string, string> $headers Authentication headers.
-     * @return object The span exporter instance.
-     * @throws \RuntimeException If required packages are not installed.
-     */
-    private function createOtlpExporter(string $protocol, ?string $endpoint, array $headers): object
-    {
-        if ($protocol === 'grpc') {
-            if (!class_exists(\OpenTelemetry\Contrib\Otlp\SpanExporter::class)) {
-                throw new \RuntimeException(
-                    "OTLP gRPC exporter not available. Install 'open-telemetry/exporter-otlp' package."
-                );
-            }
-
-            return new \OpenTelemetry\Contrib\Otlp\SpanExporter(
-                new \OpenTelemetry\Contrib\Grpc\GrpcTransportFactory()
-            );
-        }
-
-        if ($protocol === 'http/protobuf') {
-            if (!class_exists(\OpenTelemetry\Contrib\Otlp\SpanExporter::class)) {
-                throw new \RuntimeException(
-                    "OTLP HTTP exporter not available. Install 'open-telemetry/exporter-otlp' package."
-                );
-            }
-
-            $transportFactory = new \OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory(
-                new \GuzzleHttp\Client(),
-                new \GuzzleHttp\Psr7\HttpFactory(),
-                new \GuzzleHttp\Psr7\HttpFactory(),
-            );
-
-            $transport = $transportFactory->create(
-                $endpoint ?? 'http://localhost:4318/v1/traces',
-                'application/x-protobuf',
-                $headers,
-            );
-
-            return new \OpenTelemetry\Contrib\Otlp\SpanExporter($transport);
-        }
-
-        throw new \InvalidArgumentException(
-            "Unsupported OTLP protocol: {$protocol}. Valid options: 'grpc', 'http/protobuf'."
-        );
-    }
-
-    /**
-     * Ensures OpenTelemetry SDK is available.
-     *
-     * @throws \RuntimeException If OpenTelemetry SDK is not installed.
-     */
-    private function ensureOpenTelemetryAvailable(): void
-    {
-        if (!interface_exists(TracerProviderInterface::class)) {
-            throw new \RuntimeException(
-                "OpenTelemetry SDK not available. Install 'open-telemetry/sdk' package."
-            );
-        }
     }
 
     /**
@@ -274,6 +198,91 @@ class Telemetry
     {
         if ($this->isOwned && $this->provider instanceof TracerProvider) {
             $this->provider->forceFlush();
+        }
+    }
+
+    /**
+     * Creates the default TracerProvider with xAI SDK resource info.
+     *
+     * @return TracerProvider
+     */
+    private function createDefaultProvider(): TracerProvider
+    {
+        $this->ensureOpenTelemetryAvailable();
+
+        $resource = ResourceInfoFactory::defaultResource()->merge(
+            ResourceInfo::create([
+                'service.name' => self::SDK_NAME,
+                'service.version' => self::SDK_VERSION,
+            ]),
+        );
+
+        return new TracerProvider([], null, $resource);
+    }
+
+    /**
+     * Creates an OTLP exporter based on protocol.
+     *
+     * @param string $protocol The protocol ('grpc' or 'http/protobuf').
+     * @param string|null $endpoint The endpoint URL.
+     * @param array<string, string> $headers Authentication headers.
+     *
+     * @throws RuntimeException If required packages are not installed.
+     *
+     * @return object The span exporter instance.
+     */
+    private function createOtlpExporter(string $protocol, ?string $endpoint, array $headers): object
+    {
+        if ($protocol === 'grpc') {
+            if (! class_exists(\OpenTelemetry\Contrib\Otlp\SpanExporter::class)) {
+                throw new RuntimeException(
+                    "OTLP gRPC exporter not available. Install 'open-telemetry/exporter-otlp' package.",
+                );
+            }
+
+            return new \OpenTelemetry\Contrib\Otlp\SpanExporter(
+                new \OpenTelemetry\Contrib\Grpc\GrpcTransportFactory(),
+            );
+        }
+
+        if ($protocol === 'http/protobuf') {
+            if (! class_exists(\OpenTelemetry\Contrib\Otlp\SpanExporter::class)) {
+                throw new RuntimeException(
+                    "OTLP HTTP exporter not available. Install 'open-telemetry/exporter-otlp' package.",
+                );
+            }
+
+            $transportFactory = new \OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory(
+                new \GuzzleHttp\Client(),
+                new \GuzzleHttp\Psr7\HttpFactory(),
+                new \GuzzleHttp\Psr7\HttpFactory(),
+            );
+
+            $transport = $transportFactory->create(
+                $endpoint ?? 'http://localhost:4318/v1/traces',
+                'application/x-protobuf',
+                $headers,
+            );
+
+            return new \OpenTelemetry\Contrib\Otlp\SpanExporter($transport);
+        }
+
+        throw new InvalidArgumentException(
+            "Unsupported OTLP protocol: {$protocol}. Valid options: 'grpc', 'http/protobuf'.",
+        );
+    }
+
+    /**
+     * Ensures OpenTelemetry SDK is available.
+     *
+     * @throws RuntimeException If OpenTelemetry SDK is not installed.
+     */
+    private function ensureOpenTelemetryAvailable(): void
+    {
+        if (! interface_exists(TracerProviderInterface::class)) {
+            throw new RuntimeException(
+                "OpenTelemetry SDK not available. Install 'open-telemetry/sdk' package.",
+            );
         }
     }
 }

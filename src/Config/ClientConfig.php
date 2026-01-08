@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Config;
 
+use RuntimeException;
+
 /**
  * Configuration for the xAI API client.
  */
@@ -43,20 +45,21 @@ readonly class ClientConfig
         public string $apiHost = self::DEFAULT_API_HOST,
         public int $timeout = self::DEFAULT_TIMEOUT,
         public array $headers = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Gets the API key, falling back to environment variable if not set.
      *
-     * @throws \RuntimeException If no API key is available.
+     * @throws RuntimeException If no API key is available.
      */
     public function getApiKey(): string
     {
         $key = $this->apiKey ?? getenv('XAI_API_KEY');
 
         if ($key === false || $key === '') {
-            throw new \RuntimeException(
-                'No API key provided. Set the XAI_API_KEY environment variable or pass an api_key parameter.'
+            throw new RuntimeException(
+                'No API key provided. Set the XAI_API_KEY environment variable or pass an api_key parameter.',
             );
         }
 

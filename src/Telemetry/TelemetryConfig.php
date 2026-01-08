@@ -57,6 +57,7 @@ final class TelemetryConfig
     {
         $envValue = getenv(self::ENV_DISABLE_TRACING);
         $value = $envValue !== false ? $envValue : '';
+
         return in_array(strtolower($value), ['1', 'true'], true);
     }
 
@@ -71,6 +72,7 @@ final class TelemetryConfig
     {
         $envValue = getenv(self::ENV_DISABLE_SENSITIVE_ATTRIBUTES);
         $value = $envValue !== false ? $envValue : '';
+
         return in_array(strtolower($value), ['1', 'true'], true);
     }
 
@@ -82,6 +84,7 @@ final class TelemetryConfig
     public static function getOtlpProtocol(): string
     {
         $envValue = getenv(self::ENV_OTLP_PROTOCOL);
+
         return $envValue !== false && $envValue !== '' ? $envValue : 'http/protobuf';
     }
 
@@ -93,6 +96,7 @@ final class TelemetryConfig
     public static function getOtlpEndpoint(): ?string
     {
         $endpoint = getenv(self::ENV_OTLP_ENDPOINT);
+
         return $endpoint !== false ? $endpoint : null;
     }
 
@@ -106,14 +110,17 @@ final class TelemetryConfig
     public static function getOtlpHeaders(): array
     {
         $headersStr = getenv(self::ENV_OTLP_HEADERS);
+
         if ($headersStr === false || $headersStr === '') {
             return [];
         }
 
         $headers = [];
         $pairs = explode(',', $headersStr);
+
         foreach ($pairs as $pair) {
             $parts = explode('=', $pair, 2);
+
             if (count($parts) === 2) {
                 $headers[trim($parts[0])] = trim($parts[1]);
             }

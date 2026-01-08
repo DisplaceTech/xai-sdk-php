@@ -56,7 +56,7 @@ readonly class UserMessage implements Message
         // For complex content (images, files), use array format
         return [
             'role' => 'user',
-            'content' => array_map(fn(Content $c) => $c->toArray(), $this->content),
+            'content' => array_map(fn (Content $c) => $c->toArray(), $this->content),
         ];
     }
 
@@ -64,6 +64,7 @@ readonly class UserMessage implements Message
      * Normalizes content to an array of Content objects.
      *
      * @param string|Content|array<Content|string> $content
+     *
      * @return array<Content>
      */
     private function normalizeContent(string|Content|array $content): array
@@ -77,8 +78,8 @@ readonly class UserMessage implements Message
         }
 
         return array_map(
-            fn(string|Content $c) => is_string($c) ? Content::text($c) : $c,
-            $content
+            fn (string|Content $c) => is_string($c) ? Content::text($c) : $c,
+            $content,
         );
     }
 }

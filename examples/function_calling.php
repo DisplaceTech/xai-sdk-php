@@ -42,23 +42,23 @@ $streaming = isset($options['stream']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Function Calling Example
+        xAI PHP SDK - Function Calling Example
 
-Usage: php examples/function_calling.php [OPTIONS]
+        Usage: php examples/function_calling.php [OPTIONS]
 
-Options:
-  --stream    Enable streaming responses
-  --help      Show this help message
+        Options:
+          --stream    Enable streaming responses
+          --help      Show this help message
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-Try asking:
-  "What's the weather in New York?"
-  "How about Tokyo in Celsius?"
-  "Compare weather in London and Paris"
+        Try asking:
+          "What's the weather in New York?"
+          "How about Tokyo in Celsius?"
+          "Compare weather in London and Paris"
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -73,7 +73,7 @@ try {
 
 echo "xAI Function Calling Example\n";
 echo "============================\n";
-echo "Mode: " . ($streaming ? 'Streaming' : 'Basic') . "\n";
+echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . "\n";
 echo "Type 'exit' to quit.\n\n";
 
 /**
@@ -81,6 +81,7 @@ echo "Type 'exit' to quit.\n\n";
  *
  * @param string $city The city name
  * @param string $units Temperature units (C or F)
+ *
  * @return string Weather description
  */
 function getWeather(string $city, string $units): string
@@ -115,7 +116,7 @@ $weatherTool = new Tool(
             ],
         ],
         'required' => ['city', 'units'],
-    ]
+    ],
 );
 
 // Create chat with tools
@@ -124,13 +125,14 @@ $chat = $client->chat->create(
     messages: [
         system('You are a helpful weather assistant. When asked about weather, use the get_weather function to fetch accurate data. Always specify the units based on the user\'s preference or location conventions.'),
     ],
-    tools: [$weatherTool]
+    tools: [$weatherTool],
 );
 
 /**
  * Process tool calls from a response.
  *
  * @param array<array<string, mixed>> $toolCalls The tool calls to process
+ *
  * @return array<array{id: string, result: string}> Results for each tool call
  */
 function processToolCalls(array $toolCalls): array
@@ -143,12 +145,12 @@ function processToolCalls(array $toolCalls): array
         $callId = $toolCall['id'] ?? '';
 
         echo "  [Tool call: {$functionName}]\n";
-        echo "  [Arguments: " . json_encode($arguments) . "]\n";
+        echo '  [Arguments: ' . json_encode($arguments) . "]\n";
 
         $result = match ($functionName) {
             'get_weather' => getWeather(
                 $arguments['city'] ?? 'Unknown',
-                $arguments['units'] ?? 'C'
+                $arguments['units'] ?? 'C',
             ),
             default => json_encode(['error' => "Unknown function: {$functionName}"]),
         };
@@ -163,7 +165,7 @@ function processToolCalls(array $toolCalls): array
 
 // Main chat loop
 while (true) {
-    echo "You: ";
+    echo 'You: ';
     $prompt = trim((string) fgets(STDIN));
 
     if (strtolower($prompt) === 'exit') {
@@ -179,9 +181,10 @@ while (true) {
     try {
         if ($streaming) {
             // Streaming mode
-            echo "Grok: ";
+            echo 'Grok: ';
 
             $lastResponse = null;
+
             foreach ($chat->stream() as [$response, $chunk]) {
                 echo $chunk->content;
                 $lastResponse = $response;
@@ -193,7 +196,8 @@ while (true) {
 
                 // Check for tool calls
                 $toolCalls = $lastResponse->getToolCalls();
-                if (!empty($toolCalls)) {
+
+                if (! empty($toolCalls)) {
                     echo "\n";
                     $results = processToolCalls($toolCalls);
 
@@ -203,7 +207,8 @@ while (true) {
                     }
 
                     // Get the follow-up response
-                    echo "Grok: ";
+                    echo 'Grok: ';
+
                     foreach ($chat->stream() as [$response, $chunk]) {
                         echo $chunk->content;
                         $lastResponse = $response;
@@ -223,7 +228,8 @@ while (true) {
 
             // Check for tool calls
             $toolCalls = $response->getToolCalls();
-            if (!empty($toolCalls)) {
+
+            if (! empty($toolCalls)) {
                 echo "\n";
                 $results = processToolCalls($toolCalls);
 
@@ -238,7 +244,7 @@ while (true) {
                 $chat->append($response);
             }
         }
-    } catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+    } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
         echo "Error: {$e->getMessage()}\n";
     }
 

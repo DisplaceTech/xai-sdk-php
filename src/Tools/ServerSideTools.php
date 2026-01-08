@@ -48,6 +48,7 @@ final class ServerSideTools
      * @param array<string>|null $excludedDomains Domains to exclude from search results (max 5).
      * @param array<string>|null $allowedDomains Domains to restrict search results to (max 5).
      * @param bool $enableImageUnderstanding Enable image understanding during search.
+     *
      * @return WebSearch The configured web search tool.
      */
     public static function webSearch(
@@ -74,6 +75,7 @@ final class ServerSideTools
      * @param array<string>|null $excludedXHandles X handles to exclude (without @).
      * @param bool $enableImageUnderstanding Enable image understanding for posts.
      * @param bool $enableVideoUnderstanding Enable video understanding for posts.
+     *
      * @return XSearch The configured X search tool.
      */
     public static function xSearch(
@@ -117,6 +119,7 @@ final class ServerSideTools
      * @param int|null $limit Maximum number of results to return.
      * @param string|null $instructions Custom search instructions.
      * @param string|null $retrievalMode Retrieval strategy: 'hybrid', 'semantic', or 'keyword'.
+     *
      * @return CollectionsSearch The configured collections search tool.
      */
     public static function collectionsSearch(
@@ -144,6 +147,7 @@ final class ServerSideTools
      * @param array<string>|null $allowedToolNames Tools the model is allowed to call.
      * @param string|null $authorization Authorization token for the server.
      * @param array<string, string>|null $extraHeaders Extra headers for the server.
+     *
      * @return McpTool The configured MCP tool.
      */
     public static function mcp(

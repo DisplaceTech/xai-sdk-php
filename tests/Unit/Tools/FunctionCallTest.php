@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Displace\XaiSdk\Tests\Unit\Tools;
 
 use Displace\XaiSdk\Tools\FunctionCall;
+use JsonException;
 use PHPUnit\Framework\TestCase;
 
 final class FunctionCallTest extends TestCase
@@ -52,7 +53,7 @@ final class FunctionCallTest extends TestCase
             arguments: 'not valid json',
         );
 
-        $this->expectException(\JsonException::class);
+        $this->expectException(JsonException::class);
         $functionCall->getDecodedArguments();
     }
 

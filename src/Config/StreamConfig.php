@@ -34,5 +34,6 @@ readonly class StreamConfig
     public function __construct(
         public bool $enabled = true,
         public int $bufferSize = self::DEFAULT_BUFFER_SIZE,
-    ) {}
+    ) {
+    }
 }

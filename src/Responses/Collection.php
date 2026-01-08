@@ -45,25 +45,20 @@ readonly class Collection
         public array $chunkConfiguration = [],
         public array $indexConfiguration = [],
         public array $fieldDefinitions = [],
-    ) {}
-
-    /**
-     * Checks if the collection is empty.
-     */
-    public function isEmpty(): bool
-    {
-        return $this->documentsCount === 0;
+    ) {
     }
 
     /**
      * Creates a Collection from an API response array.
      *
      * @param array<string, mixed> $data The collection data.
+     *
      * @return self
      */
     public static function fromArray(array $data): self
     {
         $createdAt = new DateTimeImmutable();
+
         if (isset($data['created_at'])) {
             $createdAt = is_int($data['created_at'])
                 ? $createdAt->setTimestamp($data['created_at'])
@@ -71,14 +66,16 @@ readonly class Collection
         }
 
         $updatedAt = null;
+
         if (isset($data['updated_at'])) {
             $updatedAt = is_int($data['updated_at'])
-                ? (new DateTimeImmutable())->setTimestamp($data['updated_at'])
+                ? new DateTimeImmutable()->setTimestamp($data['updated_at'])
                 : new DateTimeImmutable($data['updated_at']);
         }
 
         // Extract model name from index configuration if present
         $modelName = $data['model_name'] ?? 'grok-embedding-small';
+
         if (isset($data['index_configuration']['model_name'])) {
             $modelName = $data['index_configuration']['model_name'];
         }
@@ -94,5 +91,13 @@ readonly class Collection
             indexConfiguration: $data['index_configuration'] ?? [],
             fieldDefinitions: $data['field_definitions'] ?? [],
         );
+    }
+
+    /**
+     * Checks if the collection is empty.
+     */
+    public function isEmpty(): bool
+    {
+        return $this->documentsCount === 0;
     }
 }

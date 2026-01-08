@@ -23,7 +23,7 @@ final class NoOpTracerTest extends TestCase
 {
     protected function setUp(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
     }

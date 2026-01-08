@@ -15,6 +15,9 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tools;
 
+use InvalidArgumentException;
+use stdClass;
+
 /**
  * Server-side tool for collections search (RAG).
  *
@@ -37,7 +40,9 @@ readonly class CollectionsSearch implements ServerSideTool
     public const TYPE = 'collections_search';
 
     public const RETRIEVAL_HYBRID = 'hybrid';
+
     public const RETRIEVAL_SEMANTIC = 'semantic';
+
     public const RETRIEVAL_KEYWORD = 'keyword';
 
     /**
@@ -54,13 +59,13 @@ readonly class CollectionsSearch implements ServerSideTool
         public ?string $instructions = null,
         public ?string $retrievalMode = null,
     ) {
-        if ($retrievalMode !== null && !in_array($retrievalMode, [
+        if ($retrievalMode !== null && ! in_array($retrievalMode, [
             self::RETRIEVAL_HYBRID,
             self::RETRIEVAL_SEMANTIC,
             self::RETRIEVAL_KEYWORD,
         ], true)) {
-            throw new \InvalidArgumentException(
-                "Invalid retrievalMode '{$retrievalMode}'. Must be one of: hybrid, semantic, keyword."
+            throw new InvalidArgumentException(
+                "Invalid retrievalMode '{$retrievalMode}'. Must be one of: hybrid, semantic, keyword.",
             );
         }
     }
@@ -91,7 +96,7 @@ readonly class CollectionsSearch implements ServerSideTool
         }
 
         if ($this->retrievalMode !== null) {
-            $config["{$this->retrievalMode}_retrieval"] = new \stdClass();
+            $config["{$this->retrievalMode}_retrieval"] = new stdClass();
         }
 
         return [

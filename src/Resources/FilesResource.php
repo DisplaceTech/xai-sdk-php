@@ -20,7 +20,7 @@ use Displace\XaiSdk\Http\HttpClient;
 use Displace\XaiSdk\Responses\File;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Utils;
+use RuntimeException;
 
 /**
  * Resource for files API.
@@ -58,19 +58,22 @@ class FilesResource
      */
     public function __construct(
         private readonly HttpClient $httpClient,
-    ) {}
+    ) {
+    }
 
     /**
      * Uploads a file from a path.
      *
      * @param string $filePath Path to the file to upload.
      * @param string|null $purpose The file purpose (assistants, fine-tune, batch).
-     * @return File The uploaded file.
+     *
      * @throws InvalidArgumentException If the file doesn't exist.
+     *
+     * @return File The uploaded file.
      */
     public function upload(string $filePath, ?string $purpose = null): File
     {
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             throw new InvalidArgumentException("File not found: {$filePath}");
         }
 
@@ -90,6 +93,7 @@ class FilesResource
      * @param string $data The file content as bytes.
      * @param string $filename The filename to use.
      * @param string|null $purpose The file purpose (assistants, fine-tune, batch).
+     *
      * @return File The uploaded file.
      */
     public function uploadBytes(string $data, string $filename, ?string $purpose = null): File
@@ -114,7 +118,7 @@ class FilesResource
             [],
             [
                 'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
-            ]
+            ],
         );
 
         // For multipart, we need to use a custom request
@@ -150,6 +154,7 @@ class FilesResource
      * @param string $order Sort order ('asc' or 'desc').
      * @param string $sortBy Field to sort by ('created_at', 'filename').
      * @param string|null $after Pagination cursor for next page.
+     *
      * @return array{data: array<File>, has_more: bool, pagination_token: string|null}
      */
     public function list(
@@ -174,8 +179,8 @@ class FilesResource
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         $files = array_map(
-            fn(array $fileData) => File::fromArray($fileData),
-            $data['data'] ?? []
+            fn (array $fileData) => File::fromArray($fileData),
+            $data['data'] ?? [],
         );
 
         return [
@@ -189,6 +194,7 @@ class FilesResource
      * Gets file metadata by ID.
      *
      * @param string $fileId The file ID to retrieve.
+     *
      * @return File The file metadata.
      */
     public function retrieve(string $fileId): File
@@ -205,6 +211,7 @@ class FilesResource
      * Alias for retrieve() to match Python SDK naming.
      *
      * @param string $fileId The file ID to retrieve.
+     *
      * @return File The file metadata.
      */
     public function get(string $fileId): File
@@ -216,6 +223,7 @@ class FilesResource
      * Downloads file content.
      *
      * @param string $fileId The file ID to download.
+     *
      * @return string The file content as bytes.
      */
     public function content(string $fileId): string
@@ -232,6 +240,7 @@ class FilesResource
      *
      * @param string $fileId The file ID to download.
      * @param string $destinationPath The local path to save the file.
+     *
      * @return int The number of bytes written.
      */
     public function download(string $fileId, string $destinationPath): int
@@ -240,7 +249,7 @@ class FilesResource
         $result = file_put_contents($destinationPath, $content);
 
         if ($result === false) {
-            throw new \RuntimeException("Failed to write file to: {$destinationPath}");
+            throw new RuntimeException("Failed to write file to: {$destinationPath}");
         }
 
         return $result;
@@ -250,6 +259,7 @@ class FilesResource
      * Deletes a file.
      *
      * @param string $fileId The file ID to delete.
+     *
      * @return array{id: string, deleted: bool} Deletion result.
      */
     public function delete(string $fileId): array
@@ -277,7 +287,7 @@ class FilesResource
         $key = getenv('XAI_API_KEY');
 
         if ($key === false || $key === '') {
-            throw new \RuntimeException('XAI_API_KEY environment variable not set');
+            throw new RuntimeException('XAI_API_KEY environment variable not set');
         }
 
         return $key;

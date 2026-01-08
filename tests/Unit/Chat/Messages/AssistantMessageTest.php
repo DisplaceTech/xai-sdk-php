@@ -78,7 +78,7 @@ final class AssistantMessageTest extends TestCase
         $message = new AssistantMessage(
             'The answer is 42.',
             [],
-            'Let me think about this step by step...'
+            'Let me think about this step by step...',
         );
 
         $this->assertSame('Let me think about this step by step...', $message->reasoningContent);

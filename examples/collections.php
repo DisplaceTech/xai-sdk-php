@@ -37,22 +37,22 @@ $options = getopt('', ['help']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Collections Example (RAG)
+        xAI PHP SDK - Collections Example (RAG)
 
-Usage: php examples/collections.php
+        Usage: php examples/collections.php
 
-This example demonstrates the full collections API workflow:
-1. Creating collections with different configurations
-2. Uploading and managing documents
-3. Searching across collections
-4. Cleaning up resources
+        This example demonstrates the full collections API workflow:
+        1. Creating collections with different configurations
+        2. Uploading and managing documents
+        3. Searching across collections
+        4. Cleaning up resources
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-Note: This example will create and delete test collections.
+        Note: This example will create and delete test collections.
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -83,7 +83,7 @@ function createCollectionExample(XaiClient $client): string
     echo "Created collection: {$collection->name}\n";
     echo "Collection ID: {$collection->id}\n";
     echo "Model: {$collection->modelName}\n";
-    echo "Created at: " . $collection->createdAt->format('Y-m-d H:i:s') . "\n\n";
+    echo 'Created at: ' . $collection->createdAt->format('Y-m-d H:i:s') . "\n\n";
 
     return $collection->id;
 }
@@ -127,7 +127,8 @@ function listCollectionsExample(XaiClient $client): void
         sortBy: 'name',
     );
 
-    echo "Found " . count($result['collections']) . " collections (sorted by name):\n";
+    echo 'Found ' . count($result['collections']) . " collections (sorted by name):\n";
+
     foreach ($result['collections'] as $collection) {
         echo "  - {$collection->name} (ID: {$collection->id})\n";
         echo "    Documents: {$collection->documentsCount}\n";
@@ -152,7 +153,7 @@ function getCollectionExample(XaiClient $client, string $collectionId): void
     echo "ID: {$collection->id}\n";
     echo "Documents: {$collection->documentsCount}\n";
     echo "Model: {$collection->modelName}\n";
-    echo "Created at: " . $collection->createdAt->format('Y-m-d H:i:s') . "\n\n";
+    echo 'Created at: ' . $collection->createdAt->format('Y-m-d H:i:s') . "\n\n";
 }
 
 /**
@@ -185,23 +186,23 @@ function uploadDocumentExample(XaiClient $client, string $collectionId): string
     echo "=== Upload Document Example ===\n\n";
 
     $documentContent = <<<'TEXT'
-Machine Learning Fundamentals
+        Machine Learning Fundamentals
 
-Machine learning is a subset of artificial intelligence that focuses on building
-systems that can learn from data and improve their performance over time without
-being explicitly programmed. There are three main types of machine learning:
+        Machine learning is a subset of artificial intelligence that focuses on building
+        systems that can learn from data and improve their performance over time without
+        being explicitly programmed. There are three main types of machine learning:
 
-1. Supervised Learning: The algorithm learns from labeled training data.
-2. Unsupervised Learning: The algorithm finds patterns in unlabeled data.
-3. Reinforcement Learning: The algorithm learns through trial and error.
+        1. Supervised Learning: The algorithm learns from labeled training data.
+        2. Unsupervised Learning: The algorithm finds patterns in unlabeled data.
+        3. Reinforcement Learning: The algorithm learns through trial and error.
 
-Common machine learning algorithms include:
-- Linear Regression
-- Decision Trees
-- Neural Networks
-- Support Vector Machines
-- K-Means Clustering
-TEXT;
+        Common machine learning algorithms include:
+        - Linear Regression
+        - Decision Trees
+        - Neural Networks
+        - Support Vector Machines
+        - K-Means Clustering
+        TEXT;
 
     $document = $client->collections->uploadDocument(
         collectionId: $collectionId,
@@ -225,20 +226,20 @@ function uploadDocumentWithWaitExample(XaiClient $client, string $collectionId):
     echo "=== Upload Document with Wait for Indexing ===\n\n";
 
     $documentContent = <<<'TEXT'
-Deep Learning Neural Networks
+        Deep Learning Neural Networks
 
-Deep learning is a subset of machine learning that uses neural networks with
-multiple layers. These networks can learn hierarchical representations of data,
-making them particularly effective for tasks like image recognition and natural
-language processing.
+        Deep learning is a subset of machine learning that uses neural networks with
+        multiple layers. These networks can learn hierarchical representations of data,
+        making them particularly effective for tasks like image recognition and natural
+        language processing.
 
-Key concepts in deep learning:
-- Layers: Input, hidden, and output layers
-- Activation Functions: ReLU, Sigmoid, Softmax
-- Backpropagation: Algorithm for training neural networks
-- Optimization: SGD, Adam, RMSprop
-- Regularization: Dropout, L1/L2 regularization
-TEXT;
+        Key concepts in deep learning:
+        - Layers: Input, hidden, and output layers
+        - Activation Functions: ReLU, Sigmoid, Softmax
+        - Backpropagation: Algorithm for training neural networks
+        - Optimization: SGD, Adam, RMSprop
+        - Regularization: Dropout, L1/L2 regularization
+        TEXT;
 
     echo "Uploading document and waiting for indexing...\n";
 
@@ -273,7 +274,8 @@ function listDocumentsExample(XaiClient $client, string $collectionId): void
         sortBy: 'age',
     );
 
-    echo "Found " . count($result['documents']) . " documents:\n";
+    echo 'Found ' . count($result['documents']) . " documents:\n";
+
     foreach ($result['documents'] as $doc) {
         echo "  - {$doc->file->name}\n";
         echo "    File ID: {$doc->file->id}\n";
@@ -308,7 +310,8 @@ function batchGetDocumentsExample(XaiClient $client, string $collectionId, array
 
     $documents = $client->collections->batchGetDocuments($collectionId, $fileIds);
 
-    echo "Retrieved " . count($documents) . " documents:\n";
+    echo 'Retrieved ' . count($documents) . " documents:\n";
+
     foreach ($documents as $doc) {
         echo "  - {$doc->file->name} ({$doc->file->id})\n";
     }
@@ -351,12 +354,13 @@ function searchExample(XaiClient $client, string $collectionId): void
         retrievalMode: CollectionsResource::MODE_HYBRID,
     );
 
-    echo "Found " . count($result['matches']) . " matches:\n\n";
+    echo 'Found ' . count($result['matches']) . " matches:\n\n";
+
     foreach ($result['matches'] as $i => $match) {
-        echo "  Match " . ($i + 1) . ":\n";
+        echo '  Match ' . ($i + 1) . ":\n";
         echo "    File ID: {$match->fileId}\n";
-        echo "    Score: " . number_format($match->score, 4) . "\n";
-        echo "    Content: " . substr($match->chunkContent, 0, 100) . "...\n\n";
+        echo '    Score: ' . number_format($match->score, 4) . "\n";
+        echo '    Content: ' . substr($match->chunkContent, 0, 100) . "...\n\n";
     }
 }
 
@@ -442,8 +446,9 @@ try {
     deleteCollectionExample($client, $collectionId2);
 
     echo "\n=== All examples completed successfully! ===\n";
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }
