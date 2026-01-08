@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tools;
 
+use stdClass;
+
 /**
  * Server-side tool for code execution.
  *
@@ -59,7 +61,7 @@ readonly class CodeExecution implements ServerSideTool
     public function toArray(): array
     {
         return [
-            self::TYPE => new \stdClass(),
+            self::TYPE => new stdClass(),
         ];
     }
 }

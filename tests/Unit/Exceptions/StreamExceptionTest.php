@@ -18,6 +18,8 @@ namespace Displace\XaiSdk\Tests\Unit\Exceptions;
 use Displace\XaiSdk\Exceptions\StreamException;
 use Displace\XaiSdk\Exceptions\XaiException;
 use Displace\XaiSdk\Tests\TestCase;
+use Exception;
+use JsonException;
 
 final class StreamExceptionTest extends TestCase
 {
@@ -62,7 +64,7 @@ final class StreamExceptionTest extends TestCase
 
     public function test_malformed_data_includes_previous_exception(): void
     {
-        $previous = new \Exception('Original error');
+        $previous = new Exception('Original error');
         $exception = StreamException::malformedData('data', $previous);
 
         $this->assertSame($previous, $exception->getPrevious());
@@ -87,7 +89,7 @@ final class StreamExceptionTest extends TestCase
 
     public function test_json_parse_error_includes_previous_exception(): void
     {
-        $previous = new \JsonException('Syntax error');
+        $previous = new JsonException('Syntax error');
         $exception = StreamException::jsonParseError('bad json', $previous);
 
         $this->assertSame($previous, $exception->getPrevious());
@@ -118,7 +120,7 @@ final class StreamExceptionTest extends TestCase
 
     public function test_read_error_includes_previous_exception(): void
     {
-        $previous = new \Exception('Socket closed');
+        $previous = new Exception('Socket closed');
         $exception = StreamException::readError($previous);
 
         $this->assertSame($previous, $exception->getPrevious());

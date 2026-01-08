@@ -26,7 +26,9 @@ readonly class File
      * File purposes.
      */
     public const PURPOSE_ASSISTANTS = 'assistants';
+
     public const PURPOSE_FINE_TUNE = 'fine-tune';
+
     public const PURPOSE_BATCH = 'batch';
 
     /**
@@ -54,7 +56,49 @@ readonly class File
         public ?string $teamId = null,
         public string $status = 'uploaded',
         public ?string $statusDetails = null,
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a File from an API response array.
+     *
+     * @param array<string, mixed> $data The file data.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        $createdAt = new DateTimeImmutable();
+
+        if (isset($data['created_at'])) {
+            $createdAt = is_int($data['created_at'])
+                ? $createdAt->setTimestamp($data['created_at'])
+                : new DateTimeImmutable($data['created_at']);
+        } elseif (isset($data['created'])) {
+            $createdAt = $createdAt->setTimestamp($data['created']);
+        }
+
+        $expiresAt = null;
+
+        if (isset($data['expires_at'])) {
+            $expiresAt = is_int($data['expires_at'])
+                ? new DateTimeImmutable()->setTimestamp($data['expires_at'])
+                : new DateTimeImmutable($data['expires_at']);
+        }
+
+        return new self(
+            id: $data['id'] ?? $data['file_id'] ?? '',
+            filename: $data['filename'] ?? $data['name'] ?? '',
+            size: $data['bytes'] ?? $data['size'] ?? $data['size_bytes'] ?? 0,
+            contentType: $data['content_type'] ?? $data['mime_type'] ?? 'application/octet-stream',
+            purpose: $data['purpose'] ?? self::PURPOSE_ASSISTANTS,
+            createdAt: $createdAt,
+            expiresAt: $expiresAt,
+            teamId: $data['team_id'] ?? null,
+            status: $data['status'] ?? 'uploaded',
+            statusDetails: $data['status_details'] ?? null,
+        );
+    }
 
     /**
      * Gets the file size in a human-readable format.
@@ -87,43 +131,5 @@ readonly class File
     public function hasError(): bool
     {
         return $this->status === 'error';
-    }
-
-    /**
-     * Creates a File from an API response array.
-     *
-     * @param array<string, mixed> $data The file data.
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $createdAt = new DateTimeImmutable();
-        if (isset($data['created_at'])) {
-            $createdAt = is_int($data['created_at'])
-                ? $createdAt->setTimestamp($data['created_at'])
-                : new DateTimeImmutable($data['created_at']);
-        } elseif (isset($data['created'])) {
-            $createdAt = $createdAt->setTimestamp($data['created']);
-        }
-
-        $expiresAt = null;
-        if (isset($data['expires_at'])) {
-            $expiresAt = is_int($data['expires_at'])
-                ? (new DateTimeImmutable())->setTimestamp($data['expires_at'])
-                : new DateTimeImmutable($data['expires_at']);
-        }
-
-        return new self(
-            id: $data['id'] ?? $data['file_id'] ?? '',
-            filename: $data['filename'] ?? $data['name'] ?? '',
-            size: $data['bytes'] ?? $data['size'] ?? $data['size_bytes'] ?? 0,
-            contentType: $data['content_type'] ?? $data['mime_type'] ?? 'application/octet-stream',
-            purpose: $data['purpose'] ?? self::PURPOSE_ASSISTANTS,
-            createdAt: $createdAt,
-            expiresAt: $expiresAt,
-            teamId: $data['team_id'] ?? null,
-            status: $data['status'] ?? 'uploaded',
-            statusDetails: $data['status_details'] ?? null,
-        );
     }
 }

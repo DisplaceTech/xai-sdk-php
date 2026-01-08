@@ -17,6 +17,7 @@ namespace Displace\XaiSdk\Tests\Unit\Config;
 
 use Displace\XaiSdk\Config\ClientConfig;
 use Displace\XaiSdk\Tests\TestCase;
+use RuntimeException;
 
 final class ClientConfigTest extends TestCase
 {
@@ -93,7 +94,7 @@ final class ClientConfigTest extends TestCase
         putenv('XAI_API_KEY');
         $config = new ClientConfig();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No API key provided');
 
         $config->getApiKey();
@@ -104,7 +105,7 @@ final class ClientConfigTest extends TestCase
         putenv('XAI_API_KEY=');
         $config = new ClientConfig();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $config->getApiKey();
     }
@@ -142,7 +143,7 @@ final class ClientConfigTest extends TestCase
             apiKey: 'key',
             apiHost: 'https://host.com',
             timeout: 60,
-            headers: ['X-Test' => 'value']
+            headers: ['X-Test' => 'value'],
         );
 
         // Verify readonly by checking property access works

@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Displace\XaiSdk\Tools;
 
 use DateTimeInterface;
+use InvalidArgumentException;
 
 /**
  * Server-side tool for X (Twitter) search.
@@ -47,9 +48,9 @@ readonly class XSearch implements ServerSideTool
      * @param DateTimeInterface|null $fromDate Start date for search results.
      * @param DateTimeInterface|null $toDate End date for search results.
      * @param array<string>|null $allowedXHandles X usernames (without @) to limit results to.
-     *        Cannot be used with $excludedXHandles.
+     *                                            Cannot be used with $excludedXHandles.
      * @param array<string>|null $excludedXHandles X usernames (without @) to exclude.
-     *        Cannot be used with $allowedXHandles.
+     *                                             Cannot be used with $allowedXHandles.
      * @param bool $enableImageUnderstanding Enable image understanding for posts.
      * @param bool $enableVideoUnderstanding Enable video understanding for posts.
      */
@@ -62,8 +63,8 @@ readonly class XSearch implements ServerSideTool
         public bool $enableVideoUnderstanding = false,
     ) {
         if ($allowedXHandles !== null && $excludedXHandles !== null) {
-            throw new \InvalidArgumentException(
-                'Cannot set both allowedXHandles and excludedXHandles. Use one or the other.'
+            throw new InvalidArgumentException(
+                'Cannot set both allowedXHandles and excludedXHandles. Use one or the other.',
             );
         }
     }

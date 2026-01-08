@@ -39,17 +39,17 @@ $options = getopt('', ['help']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Structured Outputs Example
+        xAI PHP SDK - Structured Outputs Example
 
-Usage: php examples/structured_outputs.php
+        Usage: php examples/structured_outputs.php
 
-This example demonstrates extracting structured data from an image of a receipt.
-The model will return JSON matching a defined schema.
+        This example demonstrates extracting structured data from an image of a receipt.
+        The model will return JSON matching a defined schema.
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -121,7 +121,7 @@ $chat = $client->chat->create(
     messages: [
         system('You are an expert at extracting information from receipts. You pay great attention to detail. Always respond with valid JSON matching the provided schema.'),
     ],
-    responseFormat: $receiptSchema
+    responseFormat: $receiptSchema,
 );
 
 // Sample receipt image
@@ -133,8 +133,8 @@ echo "Analyzing receipt image...\n\n";
 $chat->append(
     user(
         'Extract the information contained in this receipt.',
-        image($receiptImageUrl, 'high')
-    )
+        image($receiptImageUrl, 'high'),
+    ),
 );
 
 try {
@@ -152,6 +152,7 @@ try {
     echo "Date: {$receipt['date']}\n\n";
 
     echo "Items:\n";
+
     foreach ($receipt['items'] as $item) {
         $price = number_format($item['price_in_cents'] / 100, 2);
         echo "  {$item['quantity']}x {$item['name']} - {$price} {$receipt['currency']}\n";
@@ -165,11 +166,12 @@ try {
     echo "  Prompt tokens: {$response->usage->promptTokens}\n";
     echo "  Completion tokens: {$response->usage->completionTokens}\n";
     echo "  Total tokens: {$response->usage->totalTokens}\n";
-} catch (\JsonException $e) {
+} catch (JsonException $e) {
     echo "Error parsing JSON response: {$e->getMessage()}\n";
     exit(1);
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }

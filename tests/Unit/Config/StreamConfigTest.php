@@ -60,7 +60,7 @@ final class StreamConfigTest extends TestCase
     {
         $config = new StreamConfig(
             enabled: false,
-            bufferSize: 32768
+            bufferSize: 32768,
         );
 
         $this->assertFalse($config->enabled);

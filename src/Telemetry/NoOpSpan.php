@@ -17,9 +17,9 @@ namespace Displace\XaiSdk\Telemetry;
 
 use OpenTelemetry\API\Trace\SpanContextInterface;
 use OpenTelemetry\API\Trace\SpanInterface;
-use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\Context\ContextInterface;
 use OpenTelemetry\Context\ScopeInterface;
+use Throwable;
 
 /**
  * A no-operation span that does nothing.
@@ -28,6 +28,38 @@ use OpenTelemetry\Context\ScopeInterface;
  */
 class NoOpSpan implements SpanInterface
 {
+    /**
+     * {@inheritDoc}
+     */
+    public static function getCurrent(): SpanInterface
+    {
+        return new self();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function fromContext(ContextInterface $context): SpanInterface
+    {
+        return new self();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function getInvalid(): SpanInterface
+    {
+        return new self();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function wrap(SpanContextInterface $spanContext): SpanInterface
+    {
+        return new self();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -87,7 +119,7 @@ class NoOpSpan implements SpanInterface
     /**
      * {@inheritDoc}
      */
-    public function recordException(\Throwable $exception, iterable $attributes = []): SpanInterface
+    public function recordException(Throwable $exception, iterable $attributes = []): SpanInterface
     {
         return $this;
     }
@@ -122,38 +154,6 @@ class NoOpSpan implements SpanInterface
     public function storeInContext(ContextInterface $context): ContextInterface
     {
         return $context;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getCurrent(): SpanInterface
-    {
-        return new self();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function fromContext(ContextInterface $context): SpanInterface
-    {
-        return new self();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getInvalid(): SpanInterface
-    {
-        return new self();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function wrap(SpanContextInterface $spanContext): SpanInterface
-    {
-        return new self();
     }
 
     /**

@@ -26,7 +26,9 @@ readonly class Model
      * Model types.
      */
     public const TYPE_LANGUAGE = 'language';
+
     public const TYPE_EMBEDDING = 'embedding';
+
     public const TYPE_IMAGE = 'image';
 
     /**
@@ -68,30 +70,7 @@ readonly class Model
         public ?float $searchPrice = null,
         public ?float $imagePrice = null,
         public string $ownedBy = 'xai',
-    ) {}
-
-    /**
-     * Checks if this is a language model.
-     */
-    public function isLanguageModel(): bool
-    {
-        return $this->type === self::TYPE_LANGUAGE;
-    }
-
-    /**
-     * Checks if this is an embedding model.
-     */
-    public function isEmbeddingModel(): bool
-    {
-        return $this->type === self::TYPE_EMBEDDING;
-    }
-
-    /**
-     * Checks if this is an image model.
-     */
-    public function isImageModel(): bool
-    {
-        return $this->type === self::TYPE_IMAGE;
+    ) {
     }
 
     /**
@@ -99,11 +78,13 @@ readonly class Model
      *
      * @param array<string, mixed> $data The model data.
      * @param string $type The model type.
+     *
      * @return self
      */
     public static function fromArray(array $data, string $type = self::TYPE_LANGUAGE): self
     {
         $created = new DateTimeImmutable();
+
         if (isset($data['created'])) {
             $created = $created->setTimestamp($data['created']);
         }
@@ -127,5 +108,29 @@ readonly class Model
             imagePrice: $data['image_price'] ?? null,
             ownedBy: $data['owned_by'] ?? 'xai',
         );
+    }
+
+    /**
+     * Checks if this is a language model.
+     */
+    public function isLanguageModel(): bool
+    {
+        return $this->type === self::TYPE_LANGUAGE;
+    }
+
+    /**
+     * Checks if this is an embedding model.
+     */
+    public function isEmbeddingModel(): bool
+    {
+        return $this->type === self::TYPE_EMBEDDING;
+    }
+
+    /**
+     * Checks if this is an image model.
+     */
+    public function isImageModel(): bool
+    {
+        return $this->type === self::TYPE_IMAGE;
     }
 }

@@ -40,7 +40,9 @@ namespace Displace\XaiSdk\Tools;
 readonly class ToolChoice
 {
     public const MODE_NONE = 'none';
+
     public const MODE_AUTO = 'auto';
+
     public const MODE_REQUIRED = 'required';
 
     /**
@@ -52,7 +54,8 @@ readonly class ToolChoice
     public function __construct(
         public ?string $functionName = null,
         public ?string $mode = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a ToolChoice with mode 'none'.
@@ -96,6 +99,7 @@ readonly class ToolChoice
      * Forces the model to call the specified tool.
      *
      * @param string $name The function name to force.
+     *
      * @return self
      */
     public static function function(string $name): self

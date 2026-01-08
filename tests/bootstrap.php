@@ -14,7 +14,7 @@
 declare(strict_types=1);
 
 // Ensure we're running in test environment
-if (!defined('PHPUNIT_RUNNING')) {
+if (! defined('PHPUNIT_RUNNING')) {
     define('PHPUNIT_RUNNING', true);
 }
 
@@ -24,7 +24,7 @@ date_default_timezone_set('UTC');
 // Load Composer autoloader
 $autoloader = dirname(__DIR__) . '/vendor/autoload.php';
 
-if (!file_exists($autoloader)) {
+if (! file_exists($autoloader)) {
     echo "Composer autoloader not found. Run 'composer install' first.\n";
     exit(1);
 }
@@ -37,12 +37,15 @@ ini_set('display_errors', '1');
 
 // Load test environment variables if .env.testing exists
 $envFile = dirname(__DIR__) . '/.env.testing';
+
 if (file_exists($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
     foreach ($lines as $line) {
         if (str_starts_with(trim($line), '#')) {
             continue;
         }
+
         if (str_contains($line, '=')) {
             [$name, $value] = explode('=', $line, 2);
             $_ENV[trim($name)] = trim($value);
@@ -52,7 +55,7 @@ if (file_exists($envFile)) {
 }
 
 // Ensure test API key is set (use placeholder if not in environment)
-if (!getenv('XAI_API_KEY') && !isset($_ENV['XAI_API_KEY'])) {
+if (! getenv('XAI_API_KEY') && ! isset($_ENV['XAI_API_KEY'])) {
     putenv('XAI_API_KEY=test-api-key-for-unit-tests');
     $_ENV['XAI_API_KEY'] = 'test-api-key-for-unit-tests';
 }

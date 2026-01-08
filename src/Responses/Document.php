@@ -24,8 +24,11 @@ readonly class Document
      * Document statuses.
      */
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_INDEXED = 'indexed';
+
     public const STATUS_FAILED = 'failed';
 
     /**
@@ -43,7 +46,29 @@ readonly class Document
         public array $fields = [],
         public ?string $statusMessage = null,
         public int $chunksCount = 0,
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a Document from an API response array.
+     *
+     * @param array<string, mixed> $data The document data.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        $fileData = $data['file_metadata'] ?? $data['file'] ?? $data;
+        $file = File::fromArray($fileData);
+
+        return new self(
+            file: $file,
+            status: $data['status'] ?? self::STATUS_PENDING,
+            fields: $data['fields'] ?? [],
+            statusMessage: $data['status_message'] ?? null,
+            chunksCount: $data['chunks_count'] ?? 0,
+        );
+    }
 
     /**
      * Checks if the document is indexed and ready for search.
@@ -67,25 +92,5 @@ readonly class Document
     public function hasFailed(): bool
     {
         return $this->status === self::STATUS_FAILED;
-    }
-
-    /**
-     * Creates a Document from an API response array.
-     *
-     * @param array<string, mixed> $data The document data.
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $fileData = $data['file_metadata'] ?? $data['file'] ?? $data;
-        $file = File::fromArray($fileData);
-
-        return new self(
-            file: $file,
-            status: $data['status'] ?? self::STATUS_PENDING,
-            fields: $data['fields'] ?? [],
-            statusMessage: $data['status_message'] ?? null,
-            chunksCount: $data['chunks_count'] ?? 0,
-        );
     }
 }

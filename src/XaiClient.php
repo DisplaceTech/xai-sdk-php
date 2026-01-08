@@ -23,7 +23,9 @@ use Displace\XaiSdk\Resources\FilesResource;
 use Displace\XaiSdk\Resources\ImageResource;
 use Displace\XaiSdk\Resources\ModelsResource;
 use Displace\XaiSdk\Resources\TokenizerResource;
+use InvalidArgumentException;
 use Psr\Http\Client\ClientInterface;
+use RuntimeException;
 
 /**
  * Main client for the xAI API.
@@ -63,14 +65,21 @@ use Psr\Http\Client\ClientInterface;
 class XaiClient
 {
     private const DEFAULT_BASE_URL = 'https://api.x.ai/v1';
+
     private const DEFAULT_TIMEOUT = 300.0;
 
     private HttpClient $httpClient;
+
     private ?ChatResource $chatResource = null;
+
     private ?ImageResource $imageResource = null;
+
     private ?ModelsResource $modelsResource = null;
+
     private ?TokenizerResource $tokenizerResource = null;
+
     private ?FilesResource $filesResource = null;
+
     private ?CollectionsResource $collectionsResource = null;
 
     /**
@@ -82,7 +91,7 @@ class XaiClient
      * @param float $timeout Request timeout in seconds.
      * @param array<string, string> $headers Additional headers to send with each request.
      *
-     * @throws \RuntimeException If no API key is available.
+     * @throws RuntimeException If no API key is available.
      */
     public function __construct(
         ?string $apiKey = null,
@@ -106,8 +115,10 @@ class XaiClient
      * Gets API resources via property access.
      *
      * @param string $name The resource name.
+     *
+     * @throws InvalidArgumentException If the property doesn't exist.
+     *
      * @return ChatResource|ImageResource|ModelsResource|TokenizerResource|FilesResource|CollectionsResource
-     * @throws \InvalidArgumentException If the property doesn't exist.
      */
     public function __get(string $name): mixed
     {
@@ -118,7 +129,7 @@ class XaiClient
             'tokenize' => $this->getTokenizerResource(),
             'files' => $this->getFilesResource(),
             'collections' => $this->getCollectionsResource(),
-            default => throw new \InvalidArgumentException(sprintf('Unknown property: %s', $name)),
+            default => throw new InvalidArgumentException(sprintf('Unknown property: %s', $name)),
         };
     }
 
@@ -126,6 +137,7 @@ class XaiClient
      * Checks if a property exists.
      *
      * @param string $name The property name.
+     *
      * @return bool
      */
     public function __isset(string $name): bool
@@ -134,6 +146,18 @@ class XaiClient
             'chat', 'image', 'models', 'tokenize', 'files', 'collections' => true,
             default => false,
         };
+    }
+
+    /**
+     * Gets the underlying HTTP client.
+     *
+     * Useful for advanced usage or debugging.
+     *
+     * @return HttpClient
+     */
+    public function getHttpClient(): HttpClient
+    {
+        return $this->httpClient;
     }
 
     /**
@@ -223,32 +247,21 @@ class XaiClient
     /**
      * Gets the API key from environment variable.
      *
+     * @throws RuntimeException If the environment variable is not set.
+     *
      * @return string
-     * @throws \RuntimeException If the environment variable is not set.
      */
     private function getApiKeyFromEnvironment(): string
     {
         $key = getenv('XAI_API_KEY');
 
         if ($key === false || $key === '') {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'No API key provided. Set the XAI_API_KEY environment variable ' .
-                'or pass an apiKey parameter to the constructor.'
+                'or pass an apiKey parameter to the constructor.',
             );
         }
 
         return $key;
-    }
-
-    /**
-     * Gets the underlying HTTP client.
-     *
-     * Useful for advanced usage or debugging.
-     *
-     * @return HttpClient
-     */
-    public function getHttpClient(): HttpClient
-    {
-        return $this->httpClient;
     }
 }

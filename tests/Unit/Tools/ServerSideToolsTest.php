@@ -15,12 +15,14 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tests\Unit\Tools;
 
+use DateTime;
 use Displace\XaiSdk\Tools\CodeExecution;
 use Displace\XaiSdk\Tools\CollectionsSearch;
 use Displace\XaiSdk\Tools\McpTool;
 use Displace\XaiSdk\Tools\ServerSideTools;
 use Displace\XaiSdk\Tools\WebSearch;
 use Displace\XaiSdk\Tools\XSearch;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class ServerSideToolsTest extends TestCase
@@ -57,7 +59,7 @@ final class ServerSideToolsTest extends TestCase
 
     public function test_web_search_throws_on_both_domain_filters(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         ServerSideTools::webSearch(
             excludedDomains: ['bad.com'],
@@ -86,8 +88,8 @@ final class ServerSideToolsTest extends TestCase
 
     public function test_x_search_with_date_range(): void
     {
-        $from = new \DateTime('2025-01-01');
-        $to = new \DateTime('2025-12-31');
+        $from = new DateTime('2025-01-01');
+        $to = new DateTime('2025-12-31');
 
         $tool = ServerSideTools::xSearch(
             fromDate: $from,
@@ -124,7 +126,7 @@ final class ServerSideToolsTest extends TestCase
 
     public function test_x_search_throws_on_both_handle_filters(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         ServerSideTools::xSearch(
             allowedXHandles: ['good'],
@@ -191,7 +193,7 @@ final class ServerSideToolsTest extends TestCase
 
     public function test_collections_search_invalid_retrieval_mode(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         ServerSideTools::collectionsSearch(
             collectionIds: ['col-1'],

@@ -44,7 +44,8 @@ readonly class HttpConfig
         public float $maxRetryDelay = 30.0,
         public array $retryStatusCodes = [429, 500, 502, 503, 504],
         public bool $retryOnConnectionError = true,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a configuration with default settings.
@@ -60,6 +61,7 @@ readonly class HttpConfig
      * Creates a configuration with retry enabled.
      *
      * @param int $maxRetries Maximum number of retries
+     *
      * @return self
      */
     public static function withRetries(int $maxRetries = 3): self
@@ -71,6 +73,7 @@ readonly class HttpConfig
      * Creates a new configuration with modified timeout.
      *
      * @param float $timeout The new timeout in seconds
+     *
      * @return self
      */
     public function withTimeout(float $timeout): self
@@ -91,6 +94,7 @@ readonly class HttpConfig
      * Creates a new configuration with modified max retries.
      *
      * @param int $maxRetries The new max retries value
+     *
      * @return self
      */
     public function withMaxRetries(int $maxRetries): self
@@ -113,6 +117,7 @@ readonly class HttpConfig
      * Uses exponential backoff with jitter.
      *
      * @param int $attempt The retry attempt number (0-based)
+     *
      * @return float The delay in seconds
      */
     public function calculateRetryDelay(int $attempt): float
@@ -130,6 +135,7 @@ readonly class HttpConfig
      * Checks if a status code should trigger a retry.
      *
      * @param int $statusCode The HTTP status code
+     *
      * @return bool
      */
     public function shouldRetryStatusCode(int $statusCode): bool

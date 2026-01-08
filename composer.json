@@ -69,8 +69,8 @@
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
         "stan": "phpstan analyse --memory-limit=512M",
-        "test": "phpunit",
-        "test:coverage": "phpunit --coverage-html build/coverage/html --coverage-clover build/coverage/clover.xml",
+        "test": "phpunit --testsuite Unit",
+        "test:coverage": "phpunit --testsuite Unit --coverage-html build/coverage/html --coverage-clover build/coverage/clover.xml",
         "test:unit": "phpunit --testsuite Unit",
         "test:integration": "phpunit --testsuite Integration",
         "qa": [

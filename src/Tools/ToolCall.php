@@ -37,11 +37,17 @@ readonly class ToolCall
      * Tool call type constants.
      */
     public const TYPE_CLIENT_SIDE = 'client_side_tool';
+
     public const TYPE_WEB_SEARCH = 'web_search_tool';
+
     public const TYPE_X_SEARCH = 'x_search_tool';
+
     public const TYPE_CODE_EXECUTION = 'code_execution_tool';
+
     public const TYPE_COLLECTIONS_SEARCH = 'collections_search_tool';
+
     public const TYPE_MCP = 'mcp_tool';
+
     public const TYPE_ATTACHMENT_SEARCH = 'attachment_search_tool';
 
     /**
@@ -57,7 +63,25 @@ readonly class ToolCall
         public string $type,
         public FunctionCall $function,
         public ?string $callType = null,
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a ToolCall from an array representation.
+     *
+     * @param array{id: string, type: string, function: array{name: string, arguments: string}, call_type?: string} $data The array data.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            id: $data['id'],
+            type: $data['type'],
+            function: FunctionCall::fromArray($data['function']),
+            callType: $data['call_type'] ?? null,
+        );
+    }
 
     /**
      * Checks if this is a client-side tool call.
@@ -101,21 +125,5 @@ readonly class ToolCall
             'type' => $this->type,
             'function' => $this->function->toArray(),
         ];
-    }
-
-    /**
-     * Creates a ToolCall from an array representation.
-     *
-     * @param array{id: string, type: string, function: array{name: string, arguments: string}, call_type?: string} $data The array data.
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            id: $data['id'],
-            type: $data['type'],
-            function: FunctionCall::fromArray($data['function']),
-            callType: $data['call_type'] ?? null,
-        );
     }
 }

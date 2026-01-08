@@ -47,25 +47,25 @@ $n = isset($options['n']) ? (int) $options['n'] : 1;
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Chat Example
+        xAI PHP SDK - Chat Example
 
-Usage: php examples/chat.php [OPTIONS]
+        Usage: php examples/chat.php [OPTIONS]
 
-Options:
-  --stream      Enable streaming responses
-  --n=<count>   Number of responses to generate (default: 1)
-  --help        Show this help message
+        Options:
+          --stream      Enable streaming responses
+          --n=<count>   Number of responses to generate (default: 1)
+          --help        Show this help message
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-Examples:
-  php examples/chat.php
-  php examples/chat.php --stream
-  php examples/chat.php --n=3
-  php examples/chat.php --stream --n=3
+        Examples:
+          php examples/chat.php
+          php examples/chat.php --stream
+          php examples/chat.php --n=3
+          php examples/chat.php --stream --n=3
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -85,21 +85,21 @@ $chat = $client->chat->create(
         system('You talk like a pirate.'),
         user('How are you?'),
         assistant('Ahoy! I be doing mighty fine, matey!'),
-    ]
+    ],
 );
 
 echo "xAI Chat Example\n";
 echo "================\n";
-echo "Mode: " . ($streaming ? 'Streaming' : 'Basic') . ($n > 1 ? " (n={$n})" : '') . "\n";
+echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . ($n > 1 ? " (n={$n})" : '') . "\n";
 echo "Type 'exit' to quit.\n\n";
 
 /**
  * Basic chat without streaming.
  */
-function basicChat(\Displace\XaiSdk\Chat\Chat $chat): void
+function basicChat(Displace\XaiSdk\Chat\Chat $chat): void
 {
     while (true) {
-        echo "You: ";
+        echo 'You: ';
         $prompt = trim((string) fgets(STDIN));
 
         if (strtolower($prompt) === 'exit') {
@@ -125,10 +125,10 @@ function basicChat(\Displace\XaiSdk\Chat\Chat $chat): void
 /**
  * Chat with streaming responses.
  */
-function chatWithStreaming(\Displace\XaiSdk\Chat\Chat $chat): void
+function chatWithStreaming(Displace\XaiSdk\Chat\Chat $chat): void
 {
     while (true) {
-        echo "You: ";
+        echo 'You: ';
         $prompt = trim((string) fgets(STDIN));
 
         if (strtolower($prompt) === 'exit') {
@@ -142,10 +142,11 @@ function chatWithStreaming(\Displace\XaiSdk\Chat\Chat $chat): void
         // Add user message
         $chat->append(user($prompt));
 
-        echo "Grok: ";
+        echo 'Grok: ';
 
         // Stream the response
         $lastResponse = null;
+
         foreach ($chat->stream() as [$response, $chunk]) {
             echo $chunk->content;
             $lastResponse = $response;
@@ -162,10 +163,10 @@ function chatWithStreaming(\Displace\XaiSdk\Chat\Chat $chat): void
 /**
  * Batch chat - generate multiple responses.
  */
-function batchChat(\Displace\XaiSdk\Chat\Chat $chat, int $n): void
+function batchChat(Displace\XaiSdk\Chat\Chat $chat, int $n): void
 {
     while (true) {
-        echo "You: ";
+        echo 'You: ';
         $prompt = trim((string) fgets(STDIN));
 
         if (strtolower($prompt) === 'exit') {
@@ -183,7 +184,7 @@ function batchChat(\Displace\XaiSdk\Chat\Chat $chat, int $n): void
         $responses = $chat->sampleBatch($n);
 
         foreach ($responses as $index => $response) {
-            echo "Grok (response " . ($index + 1) . "): {$response->getContent()}\n";
+            echo 'Grok (response ' . ($index + 1) . "): {$response->getContent()}\n";
         }
         echo "\n";
 
@@ -200,8 +201,9 @@ try {
         [true, false] => batchChat($chat, $n),
         [true, true] => batchChat($chat, $n), // Streaming batch not implemented yet
     };
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }

@@ -39,18 +39,18 @@ $useBase64 = isset($options['base64']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Image Understanding Example
+        xAI PHP SDK - Image Understanding Example
 
-Usage: php examples/image_understanding.php [OPTIONS]
+        Usage: php examples/image_understanding.php [OPTIONS]
 
-Options:
-  --base64    Use base64-encoded image data instead of URL
-  --help      Show this help message
+        Options:
+          --base64    Use base64-encoded image data instead of URL
+          --help      Show this help message
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -81,13 +81,13 @@ function imageUnderstandingUrl(XaiClient $client): void
             'What do these images have in common?',
             image(
                 'https://www.nasa.gov/wp-content/uploads/2025/04/51d-9092large.jpg',
-                'high'
+                'high',
             ),
             image(
                 'https://www.nasa.gov/wp-content/uploads/2025/04/0101247orig-1.jpg',
-                'high'
-            )
-        )
+                'high',
+            ),
+        ),
     );
 
     echo "Analyzing two NASA images...\n\n";
@@ -114,6 +114,7 @@ function imageUnderstandingBase64(XaiClient $client): void
     echo "Downloading image from Wikipedia...\n";
 
     $imageData = file_get_contents($imageUrl);
+
     if ($imageData === false) {
         echo "Error: Could not download image.\n";
         exit(1);
@@ -122,15 +123,15 @@ function imageUnderstandingBase64(XaiClient $client): void
     $base64Data = base64_encode($imageData);
     $dataUri = "data:image/jpeg;base64,{$base64Data}";
 
-    echo "Image encoded (" . strlen($base64Data) . " bytes)\n\n";
+    echo 'Image encoded (' . strlen($base64Data) . " bytes)\n\n";
 
     $chat = $client->chat->create(model: 'grok-2-vision');
 
     $chat->append(
         user(
             'What kind of ant is this? Provide details about this species.',
-            image($dataUri)
-        )
+            image($dataUri),
+        ),
     );
 
     echo "Analyzing image...\n\n";
@@ -151,8 +152,9 @@ try {
     } else {
         imageUnderstandingUrl($client);
     }
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }

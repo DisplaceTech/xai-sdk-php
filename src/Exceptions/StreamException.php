@@ -44,11 +44,13 @@ class StreamException extends XaiException
      *
      * @param string $data The malformed data
      * @param Throwable|null $previous The previous exception
+     *
      * @return self
      */
     public static function malformedData(string $data, ?Throwable $previous = null): self
     {
         $preview = strlen($data) > 100 ? substr($data, 0, 100) . '...' : $data;
+
         return new self(
             sprintf('Malformed SSE data received: %s', $preview),
             $previous,
@@ -60,11 +62,13 @@ class StreamException extends XaiException
      *
      * @param string $json The JSON that failed to parse
      * @param Throwable|null $previous The JSON exception
+     *
      * @return self
      */
     public static function jsonParseError(string $json, ?Throwable $previous = null): self
     {
         $preview = strlen($json) > 100 ? substr($json, 0, 100) . '...' : $json;
+
         return new self(
             sprintf('Failed to parse JSON from stream: %s', $preview),
             $previous,
@@ -75,14 +79,17 @@ class StreamException extends XaiException
      * Creates an exception for unexpected stream termination.
      *
      * @param string|null $reason The reason for termination if known
+     *
      * @return self
      */
     public static function unexpectedTermination(?string $reason = null): self
     {
         $message = 'Stream terminated unexpectedly';
+
         if ($reason !== null) {
             $message .= ': ' . $reason;
         }
+
         return new self($message);
     }
 
@@ -90,6 +97,7 @@ class StreamException extends XaiException
      * Creates an exception for stream read errors.
      *
      * @param Throwable|null $previous The previous exception
+     *
      * @return self
      */
     public static function readError(?Throwable $previous = null): self

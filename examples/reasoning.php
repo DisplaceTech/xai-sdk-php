@@ -41,29 +41,29 @@ $effort = $options['effort'] ?? 'low';
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Reasoning Example
+        xAI PHP SDK - Reasoning Example
 
-Usage: php examples/reasoning.php [OPTIONS]
+        Usage: php examples/reasoning.php [OPTIONS]
 
-Options:
-  --stream         Enable streaming responses
-  --effort=<level> Reasoning effort level: low or high (default: low)
-  --help           Show this help message
+        Options:
+          --stream         Enable streaming responses
+          --effort=<level> Reasoning effort level: low or high (default: low)
+          --help           Show this help message
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-Example prompts to try:
-  "Solve: What is 15% of 847?"
-  "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly?"
-  "A train leaves station A at 9:00 AM traveling at 60 mph..."
+        Example prompts to try:
+          "Solve: What is 15% of 847?"
+          "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly?"
+          "A train leaves station A at 9:00 AM traveling at 60 mph..."
 
-HELP;
+        HELP;
     exit(0);
 }
 
 // Validate effort level
-if (!in_array($effort, ['low', 'high'], true)) {
+if (! in_array($effort, ['low', 'high'], true)) {
     echo "Error: Invalid effort level. Use 'low' or 'high'.\n";
     exit(1);
 }
@@ -81,16 +81,16 @@ echo "xAI Reasoning Example\n";
 echo "=====================\n";
 echo "Model: grok-3-mini (reasoning model)\n";
 echo "Effort: {$effort}\n";
-echo "Mode: " . ($streaming ? 'Streaming' : 'Basic') . "\n\n";
+echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . "\n\n";
 
 // Create chat with reasoning configuration
 $chat = $client->chat->create(
     model: 'grok-3-mini',
-    reasoningEffort: $effort
+    reasoningEffort: $effort,
 );
 
 // Get the prompt
-echo "Enter a prompt: ";
+echo 'Enter a prompt: ';
 $prompt = trim((string) fgets(STDIN));
 
 if ($prompt === '') {
@@ -138,6 +138,7 @@ try {
 
         echo "\n--------- Reasoning ---------\n";
         $reasoningContent = $response->getReasoningContent();
+
         if ($reasoningContent !== null) {
             echo "{$reasoningContent}\n";
         } else {
@@ -152,8 +153,9 @@ try {
         echo "Completion Tokens: {$response->usage->completionTokens}\n";
         echo "Total Tokens: {$response->usage->totalTokens}\n";
     }
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }

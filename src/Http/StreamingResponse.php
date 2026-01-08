@@ -17,6 +17,7 @@ namespace Displace\XaiSdk\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Throwable;
 
 /**
  * Wrapper for streaming HTTP responses.
@@ -28,7 +29,9 @@ use Psr\Http\Message\StreamInterface;
 final class StreamingResponse
 {
     private ResponseInterface $response;
+
     private StreamInterface $stream;
+
     private bool $closed = false;
 
     /**
@@ -84,6 +87,7 @@ final class StreamingResponse
      * Gets a response header value.
      *
      * @param string $name The header name
+     *
      * @return string The header value, or empty string if not present
      */
     public function getHeader(string $name): string
@@ -115,6 +119,7 @@ final class StreamingResponse
      * Reads bytes from the stream.
      *
      * @param int $length Number of bytes to read
+     *
      * @return string
      */
     public function read(int $length): string
@@ -133,6 +138,7 @@ final class StreamingResponse
      * Useful for parsing SSE streams line by line.
      *
      * @param int $maxLength Maximum bytes to read
+     *
      * @return string|null The line content, or null if EOF
      */
     public function readLine(int $maxLength = 4096): ?string
@@ -144,8 +150,9 @@ final class StreamingResponse
         $line = '';
         $bytesRead = 0;
 
-        while (!$this->stream->eof() && $bytesRead < $maxLength) {
+        while (! $this->stream->eof() && $bytesRead < $maxLength) {
             $char = $this->stream->read(1);
+
             if ($char === '') {
                 break;
             }
@@ -196,6 +203,7 @@ final class StreamingResponse
     public function detach(): StreamInterface
     {
         $this->closed = true;
+
         return $this->stream;
     }
 
@@ -203,8 +211,6 @@ final class StreamingResponse
      * Closes the stream and releases resources.
      *
      * This method is idempotent and safe to call multiple times.
-     *
-     * @return void
      */
     public function close(): void
     {
@@ -216,7 +222,7 @@ final class StreamingResponse
 
         try {
             $this->stream->close();
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Ignore close errors - stream may already be closed
         }
     }

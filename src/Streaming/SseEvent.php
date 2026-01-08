@@ -37,7 +37,8 @@ readonly class SseEvent
         public string $data = '',
         public ?string $id = null,
         public ?int $retry = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Checks if this event signals the end of the stream.
@@ -63,6 +64,7 @@ readonly class SseEvent
         }
 
         $decoded = json_decode($this->data, true);
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }

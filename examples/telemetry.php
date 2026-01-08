@@ -42,24 +42,24 @@ $options = getopt('', ['console', 'otlp', 'custom', 'help']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Telemetry Example
+        xAI PHP SDK - Telemetry Example
 
-Usage: php examples/telemetry.php [OPTIONS]
+        Usage: php examples/telemetry.php [OPTIONS]
 
-Options:
-  --console     Export traces to console (for debugging)
-  --otlp        Export traces to OTLP backend (for production)
-  --custom      Use custom TracerProvider example
-  --help        Show this help message
+        Options:
+          --console     Export traces to console (for debugging)
+          --otlp        Export traces to OTLP backend (for production)
+          --custom      Use custom TracerProvider example
+          --help        Show this help message
 
-Environment:
-  XAI_API_KEY                     Your xAI API key (required)
-  XAI_SDK_DISABLE_TRACING         Set to "1" to disable tracing
-  OTEL_EXPORTER_OTLP_ENDPOINT     OTLP endpoint URL (for --otlp)
-  OTEL_EXPORTER_OTLP_HEADERS      Authentication headers (for --otlp)
-  OTEL_EXPORTER_OTLP_PROTOCOL     Export protocol: grpc or http/protobuf
+        Environment:
+          XAI_API_KEY                     Your xAI API key (required)
+          XAI_SDK_DISABLE_TRACING         Set to "1" to disable tracing
+          OTEL_EXPORTER_OTLP_ENDPOINT     OTLP endpoint URL (for --otlp)
+          OTEL_EXPORTER_OTLP_HEADERS      Authentication headers (for --otlp)
+          OTEL_EXPORTER_OTLP_PROTOCOL     Export protocol: grpc or http/protobuf
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -177,35 +177,36 @@ function customTracerProviderExample(XaiClient $client): void
     echo "---------------------------\n\n";
 
     // Check if OpenTelemetry SDK is available
-    if (!class_exists(\OpenTelemetry\SDK\Trace\TracerProvider::class)) {
+    if (! class_exists(OpenTelemetry\SDK\Trace\TracerProvider::class)) {
         echo "Error: OpenTelemetry SDK not installed.\n";
         echo "Install with: composer require open-telemetry/sdk\n\n";
         noTelemetryExample($client);
+
         return;
     }
 
     try {
         // Create a custom resource with service information
-        $resource = \OpenTelemetry\SDK\Resource\ResourceInfoFactory::defaultResource()->merge(
-            \OpenTelemetry\SDK\Resource\ResourceInfo::create([
+        $resource = OpenTelemetry\SDK\Resource\ResourceInfoFactory::defaultResource()->merge(
+            OpenTelemetry\SDK\Resource\ResourceInfo::create([
                 'service.name' => 'my-application',
                 'service.version' => '1.0.0',
                 'deployment.environment' => 'development',
-            ])
+            ]),
         );
 
         // Create a custom TracerProvider
-        $tracerProvider = new \OpenTelemetry\SDK\Trace\TracerProvider([], null, $resource);
+        $tracerProvider = new OpenTelemetry\SDK\Trace\TracerProvider([], null, $resource);
 
         // Set as global tracer provider
-        \OpenTelemetry\API\Trace\TracerProviderInterface::setGlobalTracerProvider($tracerProvider);
+        OpenTelemetry\API\Trace\TracerProviderInterface::setGlobalTracerProvider($tracerProvider);
 
         // Create telemetry with custom provider
         $telemetry = new Telemetry($tracerProvider);
         $telemetry->setupConsoleExporter();
 
         echo "Custom TracerProvider configured with service metadata.\n\n";
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         echo "Warning: Could not set up custom TracerProvider: {$e->getMessage()}\n";
         echo "Continuing without telemetry...\n\n";
     }
@@ -235,8 +236,9 @@ try {
     } else {
         noTelemetryExample($client);
     }
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }

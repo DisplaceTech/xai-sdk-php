@@ -52,7 +52,23 @@ readonly class ToolResult
     public function __construct(
         public string $content,
         public ?string $toolCallId = null,
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a ToolResult from an array representation.
+     *
+     * @param array{content: string, tool_call_id?: string} $data The array data.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            content: $data['content'],
+            toolCallId: $data['tool_call_id'] ?? null,
+        );
+    }
 
     /**
      * Gets the role for this message type.
@@ -81,19 +97,5 @@ readonly class ToolResult
         }
 
         return $result;
-    }
-
-    /**
-     * Creates a ToolResult from an array representation.
-     *
-     * @param array{content: string, tool_call_id?: string} $data The array data.
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            content: $data['content'],
-            toolCallId: $data['tool_call_id'] ?? null,
-        );
     }
 }

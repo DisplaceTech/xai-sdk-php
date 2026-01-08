@@ -23,6 +23,7 @@ use Displace\XaiSdk\Exceptions\ServerException;
 use Displace\XaiSdk\Http\HttpClient;
 use Displace\XaiSdk\Http\HttpConfig;
 use Displace\XaiSdk\Tests\TestCase;
+use Exception;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -51,7 +52,7 @@ final class HttpClientTest extends TestCase
         $client = new HttpClient(
             'test-api-key',
             $this->mockClient,
-            'https://custom.api.com/v2'
+            'https://custom.api.com/v2',
         );
 
         $this->assertEquals('https://custom.api.com/v2', $client->getBaseUrl());
@@ -329,7 +330,7 @@ final class HttpClientTest extends TestCase
 
     public function test_connection_error_throws_api_exception(): void
     {
-        $connectionException = new class extends \Exception implements ClientExceptionInterface {};
+        $connectionException = new class() extends Exception implements ClientExceptionInterface {};
 
         $this->mockClient
             ->expects($this->once())
@@ -417,7 +418,7 @@ final class HttpClientTest extends TestCase
         $client = new HttpClient(
             'test-api-key',
             $this->mockClient,
-            headers: ['X-Custom-Header' => 'custom-value']
+            headers: ['X-Custom-Header' => 'custom-value'],
         );
         $client->get('/models');
     }
@@ -431,6 +432,7 @@ final class HttpClientTest extends TestCase
             ->method('sendRequest')
             ->with($this->callback(function (RequestInterface $request) {
                 $uri = (string) $request->getUri();
+
                 return str_contains($uri, 'limit=10') && str_contains($uri, 'offset=20');
             }))
             ->willReturn($response);
@@ -449,6 +451,7 @@ final class HttpClientTest extends TestCase
             ->with($this->callback(function (RequestInterface $request) {
                 $body = $request->getBody()->getContents();
                 $decoded = json_decode($body, true);
+
                 return $decoded['model'] === 'grok-3' && $decoded['messages'][0]['role'] === 'user';
             }))
             ->willReturn($response);

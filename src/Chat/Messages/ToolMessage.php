@@ -31,7 +31,8 @@ readonly class ToolMessage implements Message
     public function __construct(
         public string $content,
         public ?string $toolCallId = null,
-    ) {}
+    ) {
+    }
 
     public function getRole(): string
     {

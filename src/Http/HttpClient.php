@@ -40,11 +40,15 @@ use Psr\Http\Message\ResponseInterface;
 class HttpClient
 {
     private const DEFAULT_BASE_URL = 'https://api.x.ai/v1';
+
     private const SDK_VERSION = '1.0.0';
 
     private ClientInterface $client;
+
     private string $baseUrl;
+
     private string $apiKey;
+
     private HttpConfig $config;
 
     /** @var array<string, string> */
@@ -88,8 +92,10 @@ class HttpClient
      * @param string $path The API endpoint path
      * @param array<string, mixed> $query Query parameters
      * @param array<string, string> $headers Additional headers
-     * @return ResponseInterface
+     *
      * @throws XaiException
+     *
+     * @return ResponseInterface
      */
     public function get(
         string $path,
@@ -108,8 +114,10 @@ class HttpClient
      * @param string $path The API endpoint path
      * @param array<string, mixed> $body Request body (will be JSON encoded)
      * @param array<string, string> $headers Additional headers
-     * @return ResponseInterface
+     *
      * @throws XaiException
+     *
+     * @return ResponseInterface
      */
     public function post(
         string $path,
@@ -135,8 +143,10 @@ class HttpClient
      * @param string $path The API endpoint path
      * @param array<string, mixed> $body Request body (will be JSON encoded)
      * @param array<string, string> $headers Additional headers
-     * @return StreamingResponse
+     *
      * @throws XaiException
+     *
+     * @return StreamingResponse
      */
     public function postStream(
         string $path,
@@ -169,8 +179,10 @@ class HttpClient
      *
      * @param string $path The API endpoint path
      * @param array<string, string> $headers Additional headers
-     * @return ResponseInterface
+     *
      * @throws XaiException
+     *
+     * @return ResponseInterface
      */
     public function delete(
         string $path,
@@ -188,8 +200,10 @@ class HttpClient
      * @param string $path The API endpoint path
      * @param array<string, mixed> $body Request body (will be JSON encoded)
      * @param array<string, string> $headers Additional headers
-     * @return ResponseInterface
+     *
      * @throws XaiException
+     *
+     * @return ResponseInterface
      */
     public function put(
         string $path,
@@ -213,8 +227,10 @@ class HttpClient
      * @param string $path The API endpoint path
      * @param array<string, mixed> $body Request body (will be JSON encoded)
      * @param array<string, string> $headers Additional headers
-     * @return ResponseInterface
+     *
      * @throws XaiException
+     *
+     * @return ResponseInterface
      */
     public function patch(
         string $path,
@@ -233,62 +249,14 @@ class HttpClient
     }
 
     /**
-     * Sends a request with retry logic.
-     *
-     * @param RequestInterface $request The request to send
-     * @return ResponseInterface
-     * @throws XaiException
-     */
-    private function sendWithRetry(RequestInterface $request): ResponseInterface
-    {
-        $lastException = null;
-        $attempts = 0;
-        $maxAttempts = $this->config->maxRetries + 1;
-
-        while ($attempts < $maxAttempts) {
-            try {
-                $response = $this->send($request);
-
-                // Check if we should retry based on status code
-                $statusCode = $response->getStatusCode();
-                if ($attempts < $this->config->maxRetries && $this->config->shouldRetryStatusCode($statusCode)) {
-                    // For rate limits, use Retry-After header if present
-                    $delay = $this->getRetryDelay($response, $attempts);
-                    usleep((int) ($delay * 1_000_000));
-                    $attempts++;
-                    continue;
-                }
-
-                return $response;
-            } catch (ApiException $e) {
-                $lastException = $e;
-
-                // Only retry on connection errors if configured
-                if (!$this->config->retryOnConnectionError || $e->getErrorType() !== 'connection_error') {
-                    throw $e;
-                }
-
-                if ($attempts >= $this->config->maxRetries) {
-                    throw $e;
-                }
-
-                $delay = $this->config->calculateRetryDelay($attempts);
-                usleep((int) ($delay * 1_000_000));
-                $attempts++;
-            }
-        }
-
-        // This should not be reached, but just in case
-        throw $lastException ?? new ApiException('Request failed after retries');
-    }
-
-    /**
      * Sends a request using the PSR-18 client.
      *
      * @param RequestInterface $request The request to send
      * @param bool $stream Whether to stream the response
-     * @return ResponseInterface
+     *
      * @throws XaiException
+     *
+     * @return ResponseInterface
      */
     public function send(RequestInterface $request, bool $stream = false): ResponseInterface
     {
@@ -364,6 +332,59 @@ class HttpClient
     }
 
     /**
+     * Sends a request with retry logic.
+     *
+     * @param RequestInterface $request The request to send
+     *
+     * @throws XaiException
+     *
+     * @return ResponseInterface
+     */
+    private function sendWithRetry(RequestInterface $request): ResponseInterface
+    {
+        $lastException = null;
+        $attempts = 0;
+        $maxAttempts = $this->config->maxRetries + 1;
+
+        while ($attempts < $maxAttempts) {
+            try {
+                $response = $this->send($request);
+
+                // Check if we should retry based on status code
+                $statusCode = $response->getStatusCode();
+
+                if ($attempts < $this->config->maxRetries && $this->config->shouldRetryStatusCode($statusCode)) {
+                    // For rate limits, use Retry-After header if present
+                    $delay = $this->getRetryDelay($response, $attempts);
+                    usleep((int) ($delay * 1_000_000));
+                    $attempts++;
+                    continue;
+                }
+
+                return $response;
+            } catch (ApiException $e) {
+                $lastException = $e;
+
+                // Only retry on connection errors if configured
+                if (! $this->config->retryOnConnectionError || $e->getErrorType() !== 'connection_error') {
+                    throw $e;
+                }
+
+                if ($attempts >= $this->config->maxRetries) {
+                    throw $e;
+                }
+
+                $delay = $this->config->calculateRetryDelay($attempts);
+                usleep((int) ($delay * 1_000_000));
+                $attempts++;
+            }
+        }
+
+        // This should not be reached, but just in case
+        throw $lastException ?? new ApiException('Request failed after retries');
+    }
+
+    /**
      * Creates the default Guzzle HTTP client.
      *
      * @return ClientInterface
@@ -382,6 +403,7 @@ class HttpClient
      *
      * @param string $path The API endpoint path
      * @param array<string, mixed> $query Query parameters
+     *
      * @return Uri
      */
     private function buildUri(string $path, array $query = []): Uri
@@ -399,6 +421,7 @@ class HttpClient
      * Merges additional headers with default headers.
      *
      * @param array<string, string> $headers Additional headers
+     *
      * @return array<string, string>
      */
     private function mergeHeaders(array $headers): array
@@ -411,6 +434,7 @@ class HttpClient
      *
      * @param ResponseInterface $response The response
      * @param int $attempt The current attempt number
+     *
      * @return float Delay in seconds
      */
     private function getRetryDelay(ResponseInterface $response, int $attempt): float
@@ -418,6 +442,7 @@ class HttpClient
         // Check for Retry-After header (used by rate limit responses)
         if ($response->hasHeader('Retry-After')) {
             $retryAfter = $response->getHeaderLine('Retry-After');
+
             if (is_numeric($retryAfter)) {
                 return (float) $retryAfter;
             }
@@ -440,6 +465,7 @@ class HttpClient
      *
      * @param RequestInterface $request The original request
      * @param ResponseInterface $response The response to check
+     *
      * @throws XaiException
      */
     private function handleErrorResponse(RequestInterface $request, ResponseInterface $response): void

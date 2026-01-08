@@ -24,7 +24,7 @@ final class NoOpSpanContextTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\SpanContextInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\SpanContextInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 

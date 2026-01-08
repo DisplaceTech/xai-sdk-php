@@ -45,22 +45,22 @@ $options = getopt('', ['code', 'x', 'combined', 'help']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Server-Side Tools Example
+        xAI PHP SDK - Server-Side Tools Example
 
-Usage: php examples/server_side_tools.php [OPTIONS]
+        Usage: php examples/server_side_tools.php [OPTIONS]
 
-Options:
-  --code        Run code execution example
-  --x           Run X (Twitter) search example
-  --combined    Run combined server + client tools example
-  --help        Show this help message
+        Options:
+          --code        Run code execution example
+          --x           Run X (Twitter) search example
+          --combined    Run combined server + client tools example
+          --help        Show this help message
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-Without options, runs the web search example.
+        Without options, runs the web search example.
 
-HELP;
+        HELP;
     exit(0);
 }
 
@@ -102,6 +102,7 @@ function webSearchExample(XaiClient $client): void
     foreach ($chat->stream() as [$response, $chunk]) {
         // Display tool calls as they happen
         $toolCalls = $chunk->toolCalls ?? [];
+
         foreach ($toolCalls as $toolCall) {
             $name = $toolCall['function']['name'] ?? 'unknown';
             $args = $toolCall['function']['arguments'] ?? '{}';
@@ -119,7 +120,8 @@ function webSearchExample(XaiClient $client): void
             echo "\n\nFinal Response:\n";
             $isThinking = false;
         }
-        if ($chunk->content !== '' && !$isThinking) {
+
+        if ($chunk->content !== '' && ! $isThinking) {
             echo $chunk->content;
         }
     }
@@ -130,8 +132,9 @@ function webSearchExample(XaiClient $client): void
     echo "  Completion tokens: {$response->usage->completionTokens}\n";
     echo "  Total tokens: {$response->usage->totalTokens}\n";
 
-    if (!empty($response->citations)) {
+    if (! empty($response->citations)) {
         echo "\nCitations:\n";
+
         foreach ($response->citations as $citation) {
             echo "  - {$citation}\n";
         }
@@ -152,7 +155,7 @@ function codeExecutionExample(XaiClient $client): void
         ],
     );
 
-    $query = "What is the 50th number in the Fibonacci sequence? Please calculate it and show me the code.";
+    $query = 'What is the 50th number in the Fibonacci sequence? Please calculate it and show me the code.';
 
     echo "Query: {$query}\n\n";
     echo "Sending request with code execution enabled...\n\n";
@@ -164,6 +167,7 @@ function codeExecutionExample(XaiClient $client): void
     foreach ($chat->stream() as [$response, $chunk]) {
         // Display tool calls
         $toolCalls = $chunk->toolCalls ?? [];
+
         foreach ($toolCalls as $toolCall) {
             $name = $toolCall['function']['name'] ?? 'unknown';
             echo "\n[Executing code...]\n";
@@ -171,6 +175,7 @@ function codeExecutionExample(XaiClient $client): void
 
         // Display tool outputs (code execution results)
         $toolOutputs = $chunk->toolOutputs ?? [];
+
         foreach ($toolOutputs as $output) {
             if (isset($output['content'])) {
                 echo "[Code output: {$output['content']}]\n\n";
@@ -187,7 +192,8 @@ function codeExecutionExample(XaiClient $client): void
             echo "\n\nFinal Response:\n";
             $isThinking = false;
         }
-        if ($chunk->content !== '' && !$isThinking) {
+
+        if ($chunk->content !== '' && ! $isThinking) {
             echo $chunk->content;
         }
     }
@@ -216,7 +222,7 @@ function xSearchExample(XaiClient $client): void
         ],
     );
 
-    $query = "What are people saying on X about the latest AI developments?";
+    $query = 'What are people saying on X about the latest AI developments?';
 
     echo "Query: {$query}\n\n";
     echo "Sending request with X search enabled...\n\n";
@@ -228,6 +234,7 @@ function xSearchExample(XaiClient $client): void
     foreach ($chat->stream() as [$response, $chunk]) {
         // Display tool calls
         $toolCalls = $chunk->toolCalls ?? [];
+
         foreach ($toolCalls as $toolCall) {
             $name = $toolCall['function']['name'] ?? 'unknown';
             $args = $toolCall['function']['arguments'] ?? '{}';
@@ -245,7 +252,8 @@ function xSearchExample(XaiClient $client): void
             echo "\n\nFinal Response:\n";
             $isThinking = false;
         }
-        if ($chunk->content !== '' && !$isThinking) {
+
+        if ($chunk->content !== '' && ! $isThinking) {
             echo $chunk->content;
         }
     }
@@ -315,6 +323,7 @@ function combinedToolsExample(XaiClient $client): void
         foreach ($chat->stream() as [$response, $chunk]) {
             // Check for tool calls
             $toolCalls = $chunk->toolCalls ?? [];
+
             foreach ($toolCalls as $toolCall) {
                 $name = $toolCall['function']['name'] ?? '';
 
@@ -322,10 +331,10 @@ function combinedToolsExample(XaiClient $client): void
                 if ($name === 'get_weather') {
                     $clientSideToolCalls[] = $toolCall;
                     echo "[Client-side tool call: {$name}]\n";
-                    echo "[Arguments: " . ($toolCall['function']['arguments'] ?? '{}') . "]\n\n";
+                    echo '[Arguments: ' . ($toolCall['function']['arguments'] ?? '{}') . "]\n\n";
                 } else {
                     echo "[Server-side tool call: {$name}]\n";
-                    echo "[Arguments: " . ($toolCall['function']['arguments'] ?? '{}') . "]\n\n";
+                    echo '[Arguments: ' . ($toolCall['function']['arguments'] ?? '{}') . "]\n\n";
                 }
             }
 
@@ -376,8 +385,9 @@ try {
     } else {
         webSearchExample($client);
     }
-} catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+} catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";
+
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
     }

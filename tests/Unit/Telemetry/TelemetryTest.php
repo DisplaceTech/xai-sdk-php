@@ -19,6 +19,7 @@ use Displace\XaiSdk\Telemetry\NoOpTracer;
 use Displace\XaiSdk\Telemetry\Telemetry;
 use Displace\XaiSdk\Telemetry\TelemetryConfig;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 final class TelemetryTest extends TestCase
 {
@@ -50,15 +51,15 @@ final class TelemetryTest extends TestCase
             $this->markTestSkipped('OpenTelemetry SDK is installed, cannot test missing dependency.');
         }
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage("OpenTelemetry SDK not available");
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('OpenTelemetry SDK not available');
 
         new Telemetry();
     }
 
     public function test_constructor_with_custom_provider(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
@@ -71,7 +72,7 @@ final class TelemetryTest extends TestCase
 
     public function test_get_tracer_returns_noop_tracer_when_disabled(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
@@ -87,7 +88,7 @@ final class TelemetryTest extends TestCase
 
     public function test_get_tracer_returns_real_tracer_when_enabled(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
@@ -108,7 +109,7 @@ final class TelemetryTest extends TestCase
 
     public function test_get_tracer_with_custom_name(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
@@ -129,14 +130,14 @@ final class TelemetryTest extends TestCase
 
     public function test_setup_console_exporter_throws_with_custom_provider(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
         $provider = $this->createMock(\OpenTelemetry\API\Trace\TracerProviderInterface::class);
         $telemetry = new Telemetry($provider);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot add span processor to custom provider');
 
         $telemetry->setupConsoleExporter();
@@ -144,14 +145,14 @@ final class TelemetryTest extends TestCase
 
     public function test_setup_otlp_exporter_throws_with_custom_provider(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
         $provider = $this->createMock(\OpenTelemetry\API\Trace\TracerProviderInterface::class);
         $telemetry = new Telemetry($provider);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot add span processor to custom provider');
 
         $telemetry->setupOtlpExporter();
@@ -159,7 +160,7 @@ final class TelemetryTest extends TestCase
 
     public function test_shutdown_does_nothing_with_custom_provider(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 
@@ -175,7 +176,7 @@ final class TelemetryTest extends TestCase
 
     public function test_force_flush_does_nothing_with_custom_provider(): void
     {
-        if (!interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
+        if (! interface_exists(\OpenTelemetry\API\Trace\TracerProviderInterface::class)) {
             $this->markTestSkipped('OpenTelemetry SDK not installed.');
         }
 

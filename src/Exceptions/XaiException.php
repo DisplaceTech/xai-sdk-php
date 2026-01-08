@@ -83,11 +83,13 @@ class XaiException extends Exception
     public function getResponseData(): ?array
     {
         $body = $this->getResponseBody();
+
         if ($body === null) {
             return null;
         }
 
         $data = json_decode($body, true);
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }

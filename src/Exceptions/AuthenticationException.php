@@ -49,6 +49,7 @@ class AuthenticationException extends XaiException
      *
      * @param RequestInterface $request The original request
      * @param ResponseInterface $response The response that triggered the exception
+     *
      * @return self
      */
     public static function fromResponse(

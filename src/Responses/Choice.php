@@ -35,7 +35,8 @@ readonly class Choice
         public AssistantMessage $message,
         public ?string $finishReason = null,
         public array $toolCalls = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a Choice instance from an API response array.

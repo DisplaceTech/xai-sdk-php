@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Displace\XaiSdk\Streaming;
 
 use Displace\XaiSdk\Http\StreamingResponse;
+use Generator;
 use Iterator;
 
 /**
@@ -30,11 +31,14 @@ use Iterator;
 class StreamIterator implements Iterator
 {
     private SseParser $parser;
-    private \Generator $generator;
+
+    private Generator $generator;
 
     /** @var array<string, mixed>|null */
     private ?array $current = null;
+
     private int $index = 0;
+
     private bool $valid = true;
 
     /**
@@ -50,29 +54,15 @@ class StreamIterator implements Iterator
     }
 
     /**
-     * Creates a generator that yields JSON chunks from SSE events.
+     * Creates a stream iterator from a streaming response.
      *
-     * @return \Generator<int, array<string, mixed>>
+     * @param StreamingResponse $response The streaming response
+     *
+     * @return self
      */
-    private function createGenerator(): \Generator
+    public static function fromResponse(StreamingResponse $response): self
     {
-        foreach ($this->parser->parse() as $event) {
-            // Skip [DONE] events
-            if ($event->isDone()) {
-                continue;
-            }
-
-            // Skip events without data
-            if (!$event->hasData()) {
-                continue;
-            }
-
-            // Parse JSON data
-            $data = $event->getJson();
-            if ($data !== null) {
-                yield $data;
-            }
-        }
+        return new self($response);
     }
 
     /**
@@ -97,8 +87,6 @@ class StreamIterator implements Iterator
 
     /**
      * Advances to the next chunk.
-     *
-     * @return void
      */
     public function next(): void
     {
@@ -117,8 +105,6 @@ class StreamIterator implements Iterator
      *
      * Note: Streaming responses cannot be rewound. This method resets
      * the index but does not restart the stream.
-     *
-     * @return void
      */
     public function rewind(): void
     {
@@ -137,17 +123,6 @@ class StreamIterator implements Iterator
     }
 
     /**
-     * Creates a stream iterator from a streaming response.
-     *
-     * @param StreamingResponse $response The streaming response
-     * @return self
-     */
-    public static function fromResponse(StreamingResponse $response): self
-    {
-        return new self($response);
-    }
-
-    /**
      * Collects all chunks into an array.
      *
      * Warning: This loads all chunks into memory. For large streams,
@@ -158,9 +133,38 @@ class StreamIterator implements Iterator
     public function toArray(): array
     {
         $chunks = [];
+
         foreach ($this as $chunk) {
             $chunks[] = $chunk;
         }
+
         return $chunks;
+    }
+
+    /**
+     * Creates a generator that yields JSON chunks from SSE events.
+     *
+     * @return Generator<int, array<string, mixed>>
+     */
+    private function createGenerator(): Generator
+    {
+        foreach ($this->parser->parse() as $event) {
+            // Skip [DONE] events
+            if ($event->isDone()) {
+                continue;
+            }
+
+            // Skip events without data
+            if (! $event->hasData()) {
+                continue;
+            }
+
+            // Parse JSON data
+            $data = $event->getJson();
+
+            if ($data !== null) {
+                yield $data;
+            }
+        }
     }
 }

@@ -56,6 +56,7 @@ class ApiException extends XaiException
      *
      * @param RequestInterface $request The original request
      * @param ResponseInterface $response The response that triggered the exception
+     *
      * @return self
      */
     public static function fromResponse(
@@ -98,6 +99,7 @@ class ApiException extends XaiException
      * @param string $message The error message
      * @param RequestInterface|null $request The request that failed
      * @param Throwable|null $previous The previous exception
+     *
      * @return self
      */
     public static function connectionError(
@@ -121,6 +123,7 @@ class ApiException extends XaiException
      *
      * @param RequestInterface|null $request The request that timed out
      * @param Throwable|null $previous The previous exception
+     *
      * @return self
      */
     public static function timeout(

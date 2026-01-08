@@ -23,7 +23,9 @@ namespace Displace\XaiSdk\Chat\Messages;
 readonly class Content
 {
     public const string TYPE_TEXT = 'text';
+
     public const string TYPE_IMAGE_URL = 'image_url';
+
     public const string TYPE_FILE = 'file';
 
     /**
@@ -35,7 +37,8 @@ readonly class Content
     public function __construct(
         public string $type,
         public array $data,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates text content.

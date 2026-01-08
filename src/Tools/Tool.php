@@ -15,6 +15,12 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tools;
 
+use Closure;
+use ReflectionFunction;
+use ReflectionNamedType;
+use ReflectionType;
+use ReflectionUnionType;
+
 /**
  * Represents a tool (function) that the model can call.
  *
@@ -60,23 +66,7 @@ readonly class Tool
         public string $name,
         public string $description,
         public array $parameters,
-    ) {}
-
-    /**
-     * Converts the tool to an array representation for API requests.
-     *
-     * @return array{type: string, function: array{name: string, description: string, parameters: string}}
-     */
-    public function toArray(): array
-    {
-        return [
-            'type' => 'function',
-            'function' => [
-                'name' => $this->name,
-                'description' => $this->description,
-                'parameters' => json_encode($this->parameters, JSON_THROW_ON_ERROR),
-            ],
-        ];
+    ) {
     }
 
     /**
@@ -88,17 +78,19 @@ readonly class Tool
      * @param callable $callable The callable to create a tool from.
      * @param string|null $name Optional override for the tool name.
      * @param string|null $description Optional override for the tool description.
+     *
      * @return self
      */
     public static function fromCallable(callable $callable, ?string $name = null, ?string $description = null): self
     {
-        $reflection = new \ReflectionFunction(\Closure::fromCallable($callable));
+        $reflection = new ReflectionFunction(Closure::fromCallable($callable));
 
         $functionName = $name ?? $reflection->getName();
 
         // Extract description from docblock if not provided
         $docComment = $reflection->getDocComment();
         $toolDescription = $description;
+
         if ($toolDescription === null && $docComment !== false) {
             // Extract first line of docblock as description
             preg_match('/\/\*\*\s*\n\s*\*\s*(.+)/', $docComment, $matches);
@@ -121,6 +113,7 @@ readonly class Tool
             // Extract parameter description from docblock
             if ($docComment !== false) {
                 preg_match('/@param\s+\S+\s+\$' . preg_quote($paramName, '/') . '\s+(.+)/', $docComment, $paramMatches);
+
                 if (isset($paramMatches[1])) {
                     $property['description'] = trim($paramMatches[1]);
                 }
@@ -128,7 +121,7 @@ readonly class Tool
 
             $properties[$paramName] = $property;
 
-            if (!$param->isOptional()) {
+            if (! $param->isOptional()) {
                 $required[] = $paramName;
             }
         }
@@ -152,21 +145,22 @@ readonly class Tool
     /**
      * Converts a PHP type to JSON Schema type.
      *
-     * @param \ReflectionType|null $type The PHP type.
+     * @param ReflectionType|null $type The PHP type.
+     *
      * @return string The JSON Schema type.
      */
-    private static function phpTypeToJsonSchemaType(?\ReflectionType $type): string
+    private static function phpTypeToJsonSchemaType(?ReflectionType $type): string
     {
         if ($type === null) {
             return 'string';
         }
 
-        if ($type instanceof \ReflectionUnionType) {
+        if ($type instanceof ReflectionUnionType) {
             // For union types, return 'string' as a safe default
             return 'string';
         }
 
-        if ($type instanceof \ReflectionNamedType) {
+        if ($type instanceof ReflectionNamedType) {
             return match ($type->getName()) {
                 'int', 'integer' => 'integer',
                 'float', 'double' => 'number',
@@ -178,5 +172,22 @@ readonly class Tool
         }
 
         return 'string';
+    }
+
+    /**
+     * Converts the tool to an array representation for API requests.
+     *
+     * @return array{type: string, function: array{name: string, description: string, parameters: string}}
+     */
+    public function toArray(): array
+    {
+        return [
+            'type' => 'function',
+            'function' => [
+                'name' => $this->name,
+                'description' => $this->description,
+                'parameters' => json_encode($this->parameters, JSON_THROW_ON_ERROR),
+            ],
+        ];
     }
 }

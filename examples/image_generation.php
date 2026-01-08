@@ -29,7 +29,6 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-use Displace\XaiSdk\Resources\ImageResource;
 use Displace\XaiSdk\XaiClient;
 
 // Parse command line arguments
@@ -37,38 +36,39 @@ $options = getopt('', ['output-dir:', 'n::', 'format::', 'help']);
 
 if (isset($options['help'])) {
     echo <<<HELP
-xAI PHP SDK - Image Generation Example
+        xAI PHP SDK - Image Generation Example
 
-Usage: php examples/image_generation.php --output-dir=<dir> [OPTIONS]
+        Usage: php examples/image_generation.php --output-dir=<dir> [OPTIONS]
 
-Options:
-  --output-dir=<dir>  Directory to save generated images (required)
-  --n=<count>         Number of images to generate (default: 1)
-  --format=<format>   Image format: 'base64' or 'url' (default: base64)
-  --help              Show this help message
+        Options:
+          --output-dir=<dir>  Directory to save generated images (required)
+          --n=<count>         Number of images to generate (default: 1)
+          --format=<format>   Image format: 'base64' or 'url' (default: base64)
+          --help              Show this help message
 
-Environment:
-  XAI_API_KEY   Your xAI API key (required)
+        Environment:
+          XAI_API_KEY   Your xAI API key (required)
 
-Examples:
-  "A sunset over mountains"
-  "A futuristic cityscape"
-  "A cat wearing a top hat"
+        Examples:
+          "A sunset over mountains"
+          "A futuristic cityscape"
+          "A cat wearing a top hat"
 
-HELP;
+        HELP;
     exit(0);
 }
 
 // Validate output directory
 $outputDir = $options['output-dir'] ?? null;
+
 if ($outputDir === null) {
     echo "Error: --output-dir is required.\n";
     echo "Usage: php examples/image_generation.php --output-dir=./images\n";
     exit(1);
 }
 
-if (!is_dir($outputDir)) {
-    if (!mkdir($outputDir, 0755, true)) {
+if (! is_dir($outputDir)) {
+    if (! mkdir($outputDir, 0o755, true)) {
         echo "Error: Could not create output directory: {$outputDir}\n";
         exit(1);
     }
@@ -77,7 +77,7 @@ if (!is_dir($outputDir)) {
 $n = (int) ($options['n'] ?? 1);
 $format = $options['format'] ?? 'base64';
 
-if (!in_array($format, ['base64', 'url'], true)) {
+if (! in_array($format, ['base64', 'url'], true)) {
     echo "Error: Invalid format. Use 'base64' or 'url'.\n";
     exit(1);
 }
@@ -101,7 +101,7 @@ echo "Type 'exit' to quit.\n\n";
 $turn = 0;
 
 while (true) {
-    echo "Prompt: ";
+    echo 'Prompt: ';
     $prompt = trim((string) fgets(STDIN));
 
     if (strtolower($prompt) === 'exit') {
@@ -136,9 +136,10 @@ while (true) {
             }
         }
 
-        echo "Generated " . count($images) . " image(s) successfully.\n";
-    } catch (\Displace\XaiSdk\Exceptions\XaiException $e) {
+        echo 'Generated ' . count($images) . " image(s) successfully.\n";
+    } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
         echo "Error: {$e->getMessage()}\n";
+
         if ($e->getHttpStatusCode() !== null) {
             echo "HTTP Status: {$e->getHttpStatusCode()}\n";
         }

@@ -31,7 +31,24 @@ readonly class Token
         public int $tokenId,
         public string $stringToken = '',
         public string $tokenBytes = '',
-    ) {}
+    ) {
+    }
+
+    /**
+     * Creates a Token from an API response array.
+     *
+     * @param array<string, mixed> $data The token data.
+     *
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            tokenId: $data['token_id'] ?? $data['id'] ?? 0,
+            stringToken: $data['string_token'] ?? $data['text'] ?? '',
+            tokenBytes: $data['token_bytes'] ?? $data['bytes'] ?? '',
+        );
+    }
 
     /**
      * Gets the decoded token bytes.
@@ -45,21 +62,7 @@ readonly class Token
         }
 
         $decoded = base64_decode($this->tokenBytes, strict: true);
-        return $decoded !== false ? $decoded : '';
-    }
 
-    /**
-     * Creates a Token from an API response array.
-     *
-     * @param array<string, mixed> $data The token data.
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            tokenId: $data['token_id'] ?? $data['id'] ?? 0,
-            stringToken: $data['string_token'] ?? $data['text'] ?? '',
-            tokenBytes: $data['token_bytes'] ?? $data['bytes'] ?? '',
-        );
+        return $decoded !== false ? $decoded : '';
     }
 }

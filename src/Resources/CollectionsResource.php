@@ -19,6 +19,7 @@ use Displace\XaiSdk\Http\HttpClient;
 use Displace\XaiSdk\Responses\Collection;
 use Displace\XaiSdk\Responses\Document;
 use Displace\XaiSdk\Responses\SearchResult;
+use RuntimeException;
 
 /**
  * Resource for collections API (RAG).
@@ -50,14 +51,16 @@ use Displace\XaiSdk\Responses\SearchResult;
  */
 class CollectionsResource
 {
-    private const ENDPOINT = '/collections';
-
     /**
      * Retrieval modes.
      */
     public const MODE_HYBRID = 'hybrid';
+
     public const MODE_SEMANTIC = 'semantic';
+
     public const MODE_KEYWORD = 'keyword';
+
+    private const ENDPOINT = '/collections';
 
     /**
      * Creates a new CollectionsResource instance.
@@ -66,7 +69,8 @@ class CollectionsResource
      */
     public function __construct(
         private readonly HttpClient $httpClient,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a new collection.
@@ -75,6 +79,7 @@ class CollectionsResource
      * @param string $modelName The embedding model to use.
      * @param array<string, mixed>|null $chunkConfiguration Chunk configuration settings.
      * @param array<array<string, mixed>>|null $fieldDefinitions Field definitions for documents.
+     *
      * @return Collection The created collection.
      */
     public function create(
@@ -111,6 +116,7 @@ class CollectionsResource
      * @param string $order Sort order ('asc' or 'desc').
      * @param string $sortBy Field to sort by ('name', 'age').
      * @param string|null $after Pagination token.
+     *
      * @return array{collections: array<Collection>, pagination_token: string|null}
      */
     public function list(
@@ -135,8 +141,8 @@ class CollectionsResource
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         $collections = array_map(
-            fn(array $item) => Collection::fromArray($item),
-            $data['collections'] ?? $data['data'] ?? []
+            fn (array $item) => Collection::fromArray($item),
+            $data['collections'] ?? $data['data'] ?? [],
         );
 
         return [
@@ -149,6 +155,7 @@ class CollectionsResource
      * Gets a collection by ID.
      *
      * @param string $collectionId The collection ID.
+     *
      * @return Collection The collection.
      */
     public function get(string $collectionId): Collection
@@ -167,6 +174,7 @@ class CollectionsResource
      * @param string $collectionId The collection ID.
      * @param string|null $name New collection name.
      * @param array<string, mixed>|null $chunkConfiguration New chunk configuration.
+     *
      * @return Collection The updated collection.
      */
     public function update(
@@ -196,11 +204,13 @@ class CollectionsResource
      * Deletes a collection.
      *
      * @param string $collectionId The collection ID.
+     *
      * @return bool True if deleted successfully.
      */
     public function delete(string $collectionId): bool
     {
         $this->httpClient->delete(self::ENDPOINT . '/' . $collectionId);
+
         return true;
     }
 
@@ -215,6 +225,7 @@ class CollectionsResource
      * @param bool $waitForIndexing Whether to wait for indexing to complete.
      * @param int $pollIntervalSeconds Poll interval when waiting for indexing.
      * @param int $timeoutSeconds Timeout when waiting for indexing.
+     *
      * @return Document The uploaded document.
      */
     public function uploadDocument(
@@ -242,7 +253,7 @@ class CollectionsResource
 
         $response = $this->httpClient->post(
             self::ENDPOINT . '/' . $collectionId . '/documents',
-            $payload
+            $payload,
         );
         $body = $response->getBody();
         $body->rewind();
@@ -255,7 +266,7 @@ class CollectionsResource
                 $collectionId,
                 $document->file->id,
                 $pollIntervalSeconds,
-                $timeoutSeconds
+                $timeoutSeconds,
             );
         }
 
@@ -268,6 +279,7 @@ class CollectionsResource
      * @param string $collectionId The collection ID.
      * @param string $fileId The file ID to add.
      * @param array<string, mixed>|null $fields Custom fields for the document.
+     *
      * @return Document The added document.
      */
     public function addExistingDocument(
@@ -285,7 +297,7 @@ class CollectionsResource
 
         $response = $this->httpClient->post(
             self::ENDPOINT . '/' . $collectionId . '/documents',
-            $payload
+            $payload,
         );
         $body = $response->getBody();
         $body->rewind();
@@ -302,6 +314,7 @@ class CollectionsResource
      * @param string $order Sort order ('asc' or 'desc').
      * @param string $sortBy Field to sort by ('name', 'age', 'size').
      * @param string|null $after Pagination token.
+     *
      * @return array{documents: array<Document>, pagination_token: string|null}
      */
     public function listDocuments(
@@ -323,15 +336,15 @@ class CollectionsResource
 
         $response = $this->httpClient->get(
             self::ENDPOINT . '/' . $collectionId . '/documents',
-            $query
+            $query,
         );
         $body = $response->getBody();
         $body->rewind();
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         $documents = array_map(
-            fn(array $item) => Document::fromArray($item),
-            $data['documents'] ?? $data['data'] ?? []
+            fn (array $item) => Document::fromArray($item),
+            $data['documents'] ?? $data['data'] ?? [],
         );
 
         return [
@@ -345,12 +358,13 @@ class CollectionsResource
      *
      * @param string $fileId The file ID.
      * @param string $collectionId The collection ID.
+     *
      * @return Document The document.
      */
     public function getDocument(string $fileId, string $collectionId): Document
     {
         $response = $this->httpClient->get(
-            self::ENDPOINT . '/' . $collectionId . '/documents/' . $fileId
+            self::ENDPOINT . '/' . $collectionId . '/documents/' . $fileId,
         );
         $body = $response->getBody();
         $body->rewind();
@@ -364,21 +378,22 @@ class CollectionsResource
      *
      * @param string $collectionId The collection ID.
      * @param array<string> $fileIds The file IDs to retrieve.
+     *
      * @return array<Document> The documents.
      */
     public function batchGetDocuments(string $collectionId, array $fileIds): array
     {
         $response = $this->httpClient->post(
             self::ENDPOINT . '/' . $collectionId . '/documents/batch',
-            ['file_ids' => $fileIds]
+            ['file_ids' => $fileIds],
         );
         $body = $response->getBody();
         $body->rewind();
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         return array_map(
-            fn(array $item) => Document::fromArray($item),
-            $data['documents'] ?? $data['data'] ?? []
+            fn (array $item) => Document::fromArray($item),
+            $data['documents'] ?? $data['data'] ?? [],
         );
     }
 
@@ -391,6 +406,7 @@ class CollectionsResource
      * @param string|null $data New document content.
      * @param string|null $contentType New content type.
      * @param array<string, mixed>|null $fields Updated fields.
+     *
      * @return Document The updated document.
      */
     public function updateDocument(
@@ -421,7 +437,7 @@ class CollectionsResource
 
         $response = $this->httpClient->patch(
             self::ENDPOINT . '/' . $collectionId . '/documents/' . $fileId,
-            $payload
+            $payload,
         );
         $body = $response->getBody();
         $body->rewind();
@@ -435,13 +451,15 @@ class CollectionsResource
      *
      * @param string $collectionId The collection ID.
      * @param string $fileId The file ID to remove.
+     *
      * @return bool True if removed successfully.
      */
     public function removeDocument(string $collectionId, string $fileId): bool
     {
         $this->httpClient->delete(
-            self::ENDPOINT . '/' . $collectionId . '/documents/' . $fileId
+            self::ENDPOINT . '/' . $collectionId . '/documents/' . $fileId,
         );
+
         return true;
     }
 
@@ -450,13 +468,14 @@ class CollectionsResource
      *
      * @param string $collectionId The collection ID.
      * @param string $fileId The file ID to reindex.
+     *
      * @return Document The document.
      */
     public function reindexDocument(string $collectionId, string $fileId): Document
     {
         $response = $this->httpClient->post(
             self::ENDPOINT . '/' . $collectionId . '/documents/' . $fileId . '/reindex',
-            []
+            [],
         );
         $body = $response->getBody();
         $body->rewind();
@@ -473,6 +492,7 @@ class CollectionsResource
      * @param int $limit Maximum number of results.
      * @param string|null $instructions Additional instructions for the search.
      * @param string $retrievalMode The retrieval mode (hybrid, semantic, keyword).
+     *
      * @return array{matches: array<SearchResult>}
      */
     public function search(
@@ -499,8 +519,8 @@ class CollectionsResource
         $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         $matches = array_map(
-            fn(array $item) => SearchResult::fromArray($item),
-            $data['matches'] ?? $data['results'] ?? []
+            fn (array $item) => SearchResult::fromArray($item),
+            $data['matches'] ?? $data['results'] ?? [],
         );
 
         return [
@@ -515,8 +535,10 @@ class CollectionsResource
      * @param string $fileId The file ID.
      * @param int $pollIntervalSeconds Poll interval in seconds.
      * @param int $timeoutSeconds Timeout in seconds.
+     *
+     * @throws RuntimeException If timeout is exceeded.
+     *
      * @return Document The indexed document.
-     * @throws \RuntimeException If timeout is exceeded.
      */
     private function waitForIndexing(
         string $collectionId,
@@ -534,14 +556,14 @@ class CollectionsResource
             }
 
             if ($document->hasFailed()) {
-                throw new \RuntimeException(
-                    'Document indexing failed: ' . ($document->statusMessage ?? 'Unknown error')
+                throw new RuntimeException(
+                    'Document indexing failed: ' . ($document->statusMessage ?? 'Unknown error'),
                 );
             }
 
             if ((time() - $startTime) >= $timeoutSeconds) {
-                throw new \RuntimeException(
-                    "Timeout waiting for document indexing after {$timeoutSeconds} seconds"
+                throw new RuntimeException(
+                    "Timeout waiting for document indexing after {$timeoutSeconds} seconds",
                 );
             }
 

@@ -50,7 +50,7 @@ $chat = $client->chat->create(
     model: 'grok-3',
     messages: [
         system('You are a helpful assistant. Give detailed explanations.'),
-    ]
+    ],
 );
 
 // Add a user message that will generate a longer response

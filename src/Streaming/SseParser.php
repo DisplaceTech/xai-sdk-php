@@ -42,6 +42,18 @@ class SseParser
     }
 
     /**
+     * Creates a parser from a streaming response.
+     *
+     * @param StreamingResponse $response The streaming response
+     *
+     * @return self
+     */
+    public static function fromResponse(StreamingResponse $response): self
+    {
+        return new self($response);
+    }
+
+    /**
      * Parses the stream and yields SSE events.
      *
      * @return Generator<SseEvent>
@@ -53,7 +65,7 @@ class SseParser
         $id = null;
         $retry = null;
 
-        while (!$this->response->eof()) {
+        while (! $this->response->eof()) {
             $line = $this->response->readLine();
 
             // Null means EOF
@@ -87,6 +99,7 @@ class SseParser
 
             // Parse field: value
             $colonPos = strpos($line, ':');
+
             if ($colonPos === false) {
                 // Line with no colon is treated as field name with empty value
                 $field = $line;
@@ -94,6 +107,7 @@ class SseParser
             } else {
                 $field = substr($line, 0, $colonPos);
                 $value = substr($line, $colonPos + 1);
+
                 // Remove single leading space from value if present
                 if (str_starts_with($value, ' ')) {
                     $value = substr($value, 1);
@@ -118,16 +132,5 @@ class SseParser
                 retry: $retry,
             );
         }
-    }
-
-    /**
-     * Creates a parser from a streaming response.
-     *
-     * @param StreamingResponse $response The streaming response
-     * @return self
-     */
-    public static function fromResponse(StreamingResponse $response): self
-    {
-        return new self($response);
     }
 }

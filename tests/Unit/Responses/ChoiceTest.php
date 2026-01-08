@@ -28,7 +28,7 @@ final class ChoiceTest extends TestCase
             index: 0,
             message: $message,
             finishReason: 'stop',
-            toolCalls: []
+            toolCalls: [],
         );
 
         $this->assertSame(0, $choice->index);

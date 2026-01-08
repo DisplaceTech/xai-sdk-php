@@ -56,7 +56,7 @@ readonly class SystemMessage implements Message
         // For complex content, use array format
         return [
             'role' => 'system',
-            'content' => array_map(fn(Content $c) => $c->toArray(), $this->content),
+            'content' => array_map(fn (Content $c) => $c->toArray(), $this->content),
         ];
     }
 
@@ -64,6 +64,7 @@ readonly class SystemMessage implements Message
      * Normalizes content to an array of Content objects.
      *
      * @param string|Content|array<Content|string> $content
+     *
      * @return array<Content>
      */
     private function normalizeContent(string|Content|array $content): array
@@ -77,8 +78,8 @@ readonly class SystemMessage implements Message
         }
 
         return array_map(
-            fn(string|Content $c) => is_string($c) ? Content::text($c) : $c,
-            $content
+            fn (string|Content $c) => is_string($c) ? Content::text($c) : $c,
+            $content,
         );
     }
 }

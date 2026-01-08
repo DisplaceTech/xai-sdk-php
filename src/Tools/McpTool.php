@@ -42,7 +42,7 @@ readonly class McpTool implements ServerSideTool
      * @param string|null $serverLabel Label for the MCP server (used to prefix tool names).
      * @param string|null $serverDescription Description of the MCP server.
      * @param array<string>|null $allowedToolNames Tools the model is allowed to call.
-     *        If empty, all tools are allowed.
+     *                                             If empty, all tools are allowed.
      * @param string|null $authorization Authorization token for the server.
      * @param array<string, string>|null $extraHeaders Extra headers for the server.
      */
@@ -53,7 +53,8 @@ readonly class McpTool implements ServerSideTool
         public ?array $allowedToolNames = null,
         public ?string $authorization = null,
         public ?array $extraHeaders = null,
-    ) {}
+    ) {
+    }
 
     /**
      * {@inheritDoc}
