@@ -1,6 +1,6 @@
 {
     "name": "displace/xai-sdk-php",
-    "description": "The official PHP SDK for xAI's APIs - full parity with the Python SDK",
+    "description": "An unofficial PHP SDK for xAI's APIs - full parity with the Python SDK",
     "type": "library",
     "license": "Apache-2.0",
     "keywords": [
