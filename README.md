@@ -5,8 +5,8 @@
   <a href="https://packagist.org/packages/displace/xai-sdk-php">
     <img src="https://img.shields.io/packagist/v/displace/xai-sdk-php" alt="Packagist Version" />
   </a>
-  <a href="https://packagist.org/packages/displace/xai-sdk-php">
-    <img src="https://img.shields.io/packagist/l/displace/xai-sdk-php" alt="License" />
+  <a href="https://github.com/DisplaceTech/xai-sdk-php/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/DisplaceTech/xai-sdk-php" alt="License" />
   </a>
   <a href="https://packagist.org/packages/displace/xai-sdk-php">
     <img src="https://img.shields.io/packagist/php-v/displace/xai-sdk-php" alt="PHP Version" />
