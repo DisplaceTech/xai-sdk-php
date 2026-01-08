@@ -54,6 +54,9 @@ logs/
 # Test output
 tests/output/
 
+# Generated example images
+examples/images/
+
 # Generated files
 *.generated.php
 
