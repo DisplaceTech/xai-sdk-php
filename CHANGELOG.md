@@ -7,6 +7,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-08
+
+### Added
+
+#### Embeddings API Support
+- **EmbeddingsResource**: New resource for the `/v1/embeddings` endpoint
+  - `create()` method supporting single string or batch array input
+  - Optional `encodingFormat` and `dimensions` parameters
+- **EmbeddingsResponse**: Response class with helper methods
+  - `getEmbedding()` for single-input convenience
+  - `getEmbeddings()` for all vectors
+  - `count()` for number of embeddings
+- **Embedding**: Individual embedding with `index`, `embedding` array, and dimensions helper
+- **EmbeddingsUsage**: Token usage tracking for embeddings
+- **embeddings.php**: Example demonstrating basic usage, batch embeddings, and similarity comparison
+
+#### Deferred Completions
+- **DeferredCompletion**: Support for long-running requests with polling
+  - Status tracking: PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED
+  - Helper methods: `isPending()`, `isCompleted()`, `isFailed()`, `isFinished()`
+  - `getResult()` and `getError()` for accessing completion data
+- **ChatResource** new methods:
+  - `createDeferred()`: Initiate a deferred completion request
+  - `retrieveDeferred()`: Poll for completion status
+  - `awaitDeferred()`: Convenient wait-with-timeout functionality
+- **DeferredCompletionException**: Exception for deferred completion failures
+
+#### Concurrent Request Batching
+- **ConcurrentRequests**: Utility for executing multiple API requests
+  - `run()`: Execute callbacks and return `RequestResult` array
+  - `all()`: Execute all callbacks, throw on any failure
+  - `settled()`: Execute all and return only successful results
+  - Configurable concurrency limits
+- **RequestResult**: Result wrapper with functional programming patterns
+  - `isSuccess()`, `isFailure()`, `getValue()`, `getError()`
+  - `map()`, `flatMap()`, `getValueOrDefault()`
+- **BatchException**: Exception with detailed failure information
+
+#### Fluent Request Builder
+- **ChatRequestBuilder**: Builder pattern for complex chat requests
+  - All chat parameters: `model()`, `temperature()`, `maxTokens()`, `seed()`, etc.
+  - Message helpers: `systemPrompt()`, `userMessage()`, `assistantMessage()`
+  - Tool support: `withTool()`, `withTools()`, `toolChoice()`, `parallelToolCalls()`
+  - Response formats: `jsonResponse()`, `jsonSchema()`, `responseFormat()`
+  - `build()` to get Chat instance, `send()` to execute immediately
+  - `reset()` for builder reuse
+
+#### PSR-15 Style Middleware System
+- **MiddlewareInterface**: Interface for request/response interception
+- **MiddlewareStack**: Stack manager with `push()`, `prepend()`, `remove()`, `handle()`
+- **LoggingMiddleware**: Request/response logging with PSR-3 logger
+  - Configurable log levels
+  - Sensitive header redaction
+  - Body truncation options
+- **RetryMiddleware**: Retry logic with exponential backoff and jitter
+- **CachingMiddleware**: Response caching using ResponseCache
+- **HttpClient** integration:
+  - `withMiddleware()` for adding middleware
+  - `withMiddlewareStack()` for stack replacement
+  - `getMiddlewareStack()` accessor
+
+#### Response Caching Layer
+- **ResponseCache**: PSR-16 compatible response caching
+  - Cache key generation based on request hash
+  - TTL configuration per endpoint
+  - Skip streaming responses by default
+- **CacheConfig**: Configuration class with factory methods
+  - `disabled()`: Disable caching entirely
+  - `deterministicOnly()`: Only cache requests with seed
+  - `metadataOnly()`: Only cache metadata endpoints
+  - Options: `cacheableEndpoints`, `requireSeed`, `cacheStreaming`, `endpointTtls`
+- **CachedResponse**: Response wrapper with cache metadata
+
+### Changed
+- **HttpConfig**: Default `maxRetries` changed from 0 to 3 (Python SDK parity)
+  - Added `DEFAULT_MAX_RETRIES` constant
+  - Added `withoutRetries()` factory method for disabling retries
+- **XaiClient**: Added `embeddings` property for accessing EmbeddingsResource
+- **composer.json**: Added `psr/simple-cache` dependency for caching support
+
+### Documentation
+- **docs/V2_ROADMAP.md**: Comprehensive v2.0 planning document
+  - Async support analysis (ReactPHP recommended, 9-13 weeks LOE)
+  - gRPC support analysis (12-15 weeks LOE)
+  - Voice Agent API analysis (WebSocket, 12-17 weeks LOE)
+  - Recommended implementation order and timeline
+- **docs/FRAMEWORK_INTEGRATIONS.md**: Laravel/Symfony package proposals
+  - `displace/xai-laravel`: Facade, Service Provider, Queue integration
+  - `displace/xai-symfony`: Bundle, Autowiring, Messenger integration
+
 ## [1.1.0] - 2026-01-08
 
 ### Added
@@ -158,6 +248,7 @@ The PHP SDK maintains API compatibility with the Python SDK:
 - PHP Iterator pattern for streaming
 - PSR-18 HTTP client compatibility
 
-[Unreleased]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DisplaceTech/xai-sdk-php/releases/tag/v1.0.0
