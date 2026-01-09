@@ -177,7 +177,7 @@ readonly class Tool
     /**
      * Converts the tool to an array representation for API requests.
      *
-     * @return array{type: string, function: array{name: string, description: string, parameters: string}}
+     * @return array{type: string, function: array{name: string, description: string, parameters: array<string, mixed>}}
      */
     public function toArray(): array
     {
@@ -186,7 +186,7 @@ readonly class Tool
             'function' => [
                 'name' => $this->name,
                 'description' => $this->description,
-                'parameters' => json_encode($this->parameters, JSON_THROW_ON_ERROR),
+                'parameters' => $this->parameters,
             ],
         ];
     }

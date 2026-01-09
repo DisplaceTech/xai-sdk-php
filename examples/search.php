@@ -30,7 +30,7 @@ echo "=== X Search Example ===\n\n";
 
 // Example 1: Search X (Twitter) for recent posts
 $xSearchResponse = $client->responses->create(
-    model: 'grok-3-fast',
+    model: 'grok-4',
     messages: [
         system('You are a helpful assistant with access to X (Twitter) search.'),
         user('What are people saying about PHP 8.4 on X today?'),
@@ -61,7 +61,7 @@ echo "=== Web Search Example ===\n\n";
 
 // Example 2: Search the web
 $webSearchResponse = $client->responses->create(
-    model: 'grok-3-fast',
+    model: 'grok-4',
     messages: [
         system('You are a helpful assistant with access to web search.'),
         user('What are the latest features in Laravel 11?'),
@@ -78,7 +78,7 @@ echo "=== Combined Search Example ===\n\n";
 
 // Example 3: Using both X search and web search
 $combinedResponse = $client->responses->create(
-    model: 'grok-3-fast',
+    model: 'grok-4',
     messages: [
         system('You are a research assistant with access to both X and web search. Cross-reference information from both sources.'),
         user('What is the community reaction to the new OpenAI o3 model? Check both X posts and tech news sites.'),

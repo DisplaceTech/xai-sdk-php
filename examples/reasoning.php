@@ -35,9 +35,10 @@ use Displace\XaiSdk\XaiClient;
 use function Displace\XaiSdk\Chat\user;
 
 // Parse command line arguments
-$options = getopt('', ['stream', 'effort::', 'help']);
+$options = getopt('', ['stream', 'effort::', 'help', 'test']);
 $streaming = isset($options['stream']);
 $effort = $options['effort'] ?? 'low';
+$testMode = isset($options['test']);
 
 if (isset($options['help'])) {
     echo <<<HELP
@@ -48,6 +49,7 @@ if (isset($options['help'])) {
         Options:
           --stream         Enable streaming responses
           --effort=<level> Reasoning effort level: low or high (default: low)
+          --test           Run a single test exchange (non-interactive)
           --help           Show this help message
 
         Environment:
@@ -90,12 +92,17 @@ $chat = $client->chat->create(
 );
 
 // Get the prompt
-echo 'Enter a prompt: ';
-$prompt = trim((string) fgets(STDIN));
+if ($testMode) {
+    $prompt = 'What is 15% of 200?';
+    echo "Test prompt: {$prompt}\n";
+} else {
+    echo 'Enter a prompt: ';
+    $prompt = trim((string) fgets(STDIN));
 
-if ($prompt === '') {
-    echo "No prompt provided.\n";
-    exit(1);
+    if ($prompt === '') {
+        echo "No prompt provided.\n";
+        exit(1);
+    }
 }
 
 $chat->append(user($prompt));
@@ -152,6 +159,10 @@ try {
         echo "Reasoning Tokens: {$response->usage->reasoningTokens}\n";
         echo "Completion Tokens: {$response->usage->completionTokens}\n";
         echo "Total Tokens: {$response->usage->totalTokens}\n";
+    }
+
+    if ($testMode) {
+        echo "\n\nTest passed!\n";
     }
 } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
     echo "\nError: {$e->getMessage()}\n";

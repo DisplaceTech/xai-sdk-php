@@ -37,8 +37,9 @@ use function Displace\XaiSdk\Chat\toolResult;
 use function Displace\XaiSdk\Chat\user;
 
 // Parse command line arguments
-$options = getopt('', ['stream', 'help']);
+$options = getopt('', ['stream', 'help', 'test']);
 $streaming = isset($options['stream']);
+$testMode = isset($options['test']);
 
 if (isset($options['help'])) {
     echo <<<HELP
@@ -48,6 +49,7 @@ if (isset($options['help'])) {
 
         Options:
           --stream    Enable streaming responses
+          --test      Run a single test exchange (non-interactive)
           --help      Show this help message
 
         Environment:
@@ -73,8 +75,7 @@ try {
 
 echo "xAI Function Calling Example\n";
 echo "============================\n";
-echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . "\n";
-echo "Type 'exit' to quit.\n\n";
+echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . ($testMode ? ' (test)' : '') . "\n";
 
 /**
  * Simulated weather function.
@@ -127,6 +128,57 @@ $chat = $client->chat->create(
     ],
     tools: [$weatherTool],
 );
+
+// Test mode: run a single function call exchange and exit
+if ($testMode) {
+    try {
+        $chat->append(user("What's the weather in London in Celsius?"));
+
+        $response = $chat->sample();
+        $chat->append($response);
+
+        $toolCalls = $response->getToolCalls();
+
+        if (empty($toolCalls)) {
+            echo "Test failed: No tool calls were made.\n";
+            exit(1);
+        }
+
+        echo "Tool calls made:\n";
+
+        foreach ($toolCalls as $toolCall) {
+            $functionName = $toolCall['function']['name'] ?? '';
+            $arguments = json_decode($toolCall['function']['arguments'] ?? '{}', true);
+            echo "  - {$functionName}(" . json_encode($arguments) . ")\n";
+
+            // Execute the function
+            $result = match ($functionName) {
+                'get_weather' => getWeather(
+                    $arguments['city'] ?? 'Unknown',
+                    $arguments['units'] ?? 'C',
+                ),
+                default => json_encode(['error' => "Unknown function: {$functionName}"]),
+            };
+
+            $chat->append(toolResult($result, $toolCall['id'] ?? ''));
+        }
+
+        // Get final response
+        $finalResponse = $chat->sample();
+        echo "Final response: {$finalResponse->getContent()}\n";
+        echo "\nTest passed!\n";
+        exit(0);
+    } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
+        echo "Test failed: {$e->getMessage()}\n";
+
+        if ($e->getHttpStatusCode() !== null) {
+            echo "HTTP Status: {$e->getHttpStatusCode()}\n";
+        }
+        exit(1);
+    }
+}
+
+echo "Type 'exit' to quit.\n\n";
 
 /**
  * Process tool calls from a response.

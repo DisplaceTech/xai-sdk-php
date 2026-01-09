@@ -32,7 +32,8 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 use Displace\XaiSdk\XaiClient;
 
 // Parse command line arguments
-$options = getopt('', ['output-dir:', 'n::', 'format::', 'help']);
+$options = getopt('', ['output-dir:', 'n::', 'format::', 'help', 'test']);
+$testMode = isset($options['test']);
 
 if (isset($options['help'])) {
     echo <<<HELP
@@ -41,9 +42,10 @@ if (isset($options['help'])) {
         Usage: php examples/image_generation.php --output-dir=<dir> [OPTIONS]
 
         Options:
-          --output-dir=<dir>  Directory to save generated images (required)
+          --output-dir=<dir>  Directory to save generated images (required unless --test)
           --n=<count>         Number of images to generate (default: 1)
           --format=<format>   Image format: 'base64' or 'url' (default: base64)
+          --test              Run a single test generation (non-interactive, uses temp dir)
           --help              Show this help message
 
         Environment:
@@ -60,6 +62,11 @@ if (isset($options['help'])) {
 
 // Validate output directory
 $outputDir = $options['output-dir'] ?? null;
+
+// In test mode, use a temp directory if not specified
+if ($testMode && $outputDir === null) {
+    $outputDir = sys_get_temp_dir() . '/xai-sdk-test-images-' . uniqid();
+}
 
 if ($outputDir === null) {
     echo "Error: --output-dir is required.\n";
@@ -96,6 +103,40 @@ echo "============================\n";
 echo "Output directory: {$outputDir}\n";
 echo "Images per prompt: {$n}\n";
 echo "Format: {$format}\n";
+
+// Test mode: generate a single test image and exit
+if ($testMode) {
+    echo "Mode: test\n\n";
+
+    try {
+        $prompt = 'A simple blue circle on a white background';
+        echo "Test prompt: {$prompt}\n";
+        echo "Generating test image...\n";
+
+        $image = $client->image->sample($prompt, 'grok-2-image-1212', 'base64');
+        $filename = "{$outputDir}/test_image.jpg";
+        $bytes = $image->saveToFile($filename);
+
+        echo "  Saved: {$filename} ({$bytes} bytes)\n";
+
+        // Cleanup
+        if (file_exists($filename)) {
+            unlink($filename);
+            rmdir($outputDir);
+        }
+
+        echo "\nTest passed!\n";
+        exit(0);
+    } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
+        echo "Test failed: {$e->getMessage()}\n";
+
+        if ($e->getHttpStatusCode() !== null) {
+            echo "HTTP Status: {$e->getHttpStatusCode()}\n";
+        }
+        exit(1);
+    }
+}
+
 echo "Type 'exit' to quit.\n\n";
 
 $turn = 0;
@@ -117,11 +158,11 @@ while (true) {
     try {
         if ($n === 1) {
             // Generate single image
-            $image = $client->image->sample($prompt, 'grok-2-image', $format);
+            $image = $client->image->sample($prompt, 'grok-2-image-1212', $format);
             $images = [$image];
         } else {
             // Generate batch
-            $images = $client->image->sampleBatch($prompt, $n, 'grok-2-image', $format);
+            $images = $client->image->sampleBatch($prompt, $n, 'grok-2-image-1212', $format);
         }
 
         // Save images

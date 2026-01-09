@@ -75,11 +75,13 @@ class ApiException extends XaiException
             $error = $data['error'];
             $message = $error['message'] ?? 'An unknown API error occurred.';
             $errorType = $error['type'] ?? null;
-            $errorCode = $error['code'] ?? null;
+            // API may return code as int or string, ensure it's a string
+            $errorCode = isset($error['code']) ? (string) $error['code'] : null;
         } else {
             $message = $data['message'] ?? $data['detail'] ?? 'An unknown API error occurred.';
             $errorType = $data['type'] ?? null;
-            $errorCode = $data['code'] ?? null;
+            // API may return code as int or string, ensure it's a string
+            $errorCode = isset($data['code']) ? (string) $data['code'] : null;
         }
 
         return new self(

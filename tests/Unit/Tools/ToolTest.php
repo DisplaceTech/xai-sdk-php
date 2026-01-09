@@ -64,7 +64,7 @@ final class ToolTest extends TestCase
         $this->assertSame('function', $array['type']);
         $this->assertSame('search', $array['function']['name']);
         $this->assertSame('Search for something', $array['function']['description']);
-        $this->assertSame(json_encode($parameters), $array['function']['parameters']);
+        $this->assertSame($parameters, $array['function']['parameters']);
     }
 
     public function test_from_callable_extracts_function_info(): void
