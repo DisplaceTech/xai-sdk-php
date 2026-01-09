@@ -158,5 +158,6 @@ The PHP SDK maintains API compatibility with the Python SDK:
 - PHP Iterator pattern for streaming
 - PSR-18 HTTP client compatibility
 
-[Unreleased]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/DisplaceTech/xai-sdk-php/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DisplaceTech/xai-sdk-php/releases/tag/v1.0.0
