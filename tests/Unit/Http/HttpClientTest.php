@@ -180,6 +180,29 @@ final class HttpClientTest extends TestCase
         $client->post('/chat/completions', ['model' => 'invalid']);
     }
 
+    public function test_422_response_throws_bad_request_exception(): void
+    {
+        $errorBody = json_encode([
+            'error' => [
+                'message' => 'Invalid input: messages is required',
+                'type' => 'invalid_request_error',
+            ],
+        ]);
+        $response = new Response(422, [], $errorBody);
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($response);
+
+        $client = new HttpClient('test-api-key', $this->mockClient);
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('Invalid input: messages is required');
+
+        $client->post('/chat/completions', ['model' => 'grok-3']);
+    }
+
     public function test_401_response_throws_authentication_exception(): void
     {
         $errorBody = json_encode([

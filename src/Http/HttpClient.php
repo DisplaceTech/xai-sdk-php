@@ -539,6 +539,7 @@ class HttpClient
      * - 401: AuthenticationException (invalid API key)
      * - 403: ApiException (forbidden)
      * - 404: ApiException (not found)
+     * - 422: BadRequestException (validation error / unprocessable entity)
      * - 429: RateLimitException (rate limited)
      * - 5xx: ServerException (server errors)
      * - Other: ApiException (general errors)
@@ -559,7 +560,7 @@ class HttpClient
 
         // Map status codes to appropriate exceptions
         match (true) {
-            $statusCode === 400 => throw BadRequestException::fromResponse($request, $response),
+            $statusCode === 400 || $statusCode === 422 => throw BadRequestException::fromResponse($request, $response),
             $statusCode === 401 => throw AuthenticationException::fromResponse($request, $response),
             $statusCode === 429 => throw RateLimitException::fromResponse($request, $response),
             $statusCode >= 500 && $statusCode < 600 => throw ServerException::fromResponse($request, $response),
