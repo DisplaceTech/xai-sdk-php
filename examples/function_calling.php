@@ -145,6 +145,7 @@ if ($testMode) {
         }
 
         echo "Tool calls made:\n";
+
         foreach ($toolCalls as $toolCall) {
             $functionName = $toolCall['function']['name'] ?? '';
             $arguments = json_decode($toolCall['function']['arguments'] ?? '{}', true);
@@ -169,6 +170,7 @@ if ($testMode) {
         exit(0);
     } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
         echo "Test failed: {$e->getMessage()}\n";
+
         if ($e->getHttpStatusCode() !== null) {
             echo "HTTP Status: {$e->getHttpStatusCode()}\n";
         }

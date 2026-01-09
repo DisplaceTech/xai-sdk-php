@@ -27,7 +27,7 @@
 declare(strict_types=1);
 
 // Check for API key
-if (!getenv('XAI_API_KEY')) {
+if (getenv('XAI_API_KEY') === false) {
     echo "\033[31mError: XAI_API_KEY environment variable is required.\033[0m\n";
     echo "Usage: XAI_API_KEY=your-key php tests/run-examples.php\n";
     exit(1);
@@ -37,7 +37,7 @@ if (!getenv('XAI_API_KEY')) {
 $options = getopt('', ['verbose', 'stop', 'only:']);
 $verbose = isset($options['verbose']);
 $stopOnFailure = isset($options['stop']);
-$onlyExample = $options['only'] ?? null;
+$onlyExample = isset($options['only']) && is_string($options['only']) ? $options['only'] : null;
 
 // Define examples and their configurations
 $examples = [
@@ -113,10 +113,10 @@ $examples = [
 ];
 
 // Filter to single example if requested
-if ($onlyExample !== null) {
-    if (!isset($examples[$onlyExample])) {
+if ($onlyExample !== null && $onlyExample !== '') {
+    if (! isset($examples[$onlyExample])) {
         echo "\033[31mError: Unknown example '{$onlyExample}'.\033[0m\n";
-        echo "Available examples: " . implode(', ', array_keys($examples)) . "\n";
+        echo 'Available examples: ' . implode(', ', array_keys($examples)) . "\n";
         exit(1);
     }
     $examples = [$onlyExample => $examples[$onlyExample]];
@@ -131,15 +131,15 @@ $results = [];
 
 echo "\n";
 echo "\033[1m=== xAI PHP SDK Example Tests ===\033[0m\n";
-echo "Running " . count($examples) . " example(s)...\n\n";
+echo 'Running ' . count($examples) . " example(s)...\n\n";
 
 foreach ($examples as $name => $config) {
     $file = $examplesDir . '/' . $config['file'];
     $description = $config['description'];
-    $timeout = $config['timeout'] ?? 30;
+    $timeout = $config['timeout'];
     $args = $config['args'] ?? '';
 
-    echo sprintf("  %-25s %s ", $name, str_pad($description, 35, '.'));
+    echo sprintf('  %-25s %s ', $name, str_pad($description, 35, '.'));
 
     // Check for skip condition
     if (isset($config['skip'])) {
@@ -150,7 +150,7 @@ foreach ($examples as $name => $config) {
     }
 
     // Check file exists
-    if (!file_exists($file)) {
+    if (! file_exists($file)) {
         echo "\033[31mMISSING\033[0m\n";
         $failed++;
         $results[$name] = ['status' => 'missing'];
@@ -162,7 +162,7 @@ foreach ($examples as $name => $config) {
         'timeout %d php %s %s 2>&1',
         $timeout,
         escapeshellarg($file),
-        $args
+        $args,
     );
 
     $startTime = microtime(true);
@@ -197,8 +197,9 @@ foreach ($examples as $name => $config) {
 
         if ($verbose) {
             echo "\n    \033[90mOutput:\033[0m\n";
+
             foreach ($output as $line) {
-                echo "    " . $line . "\n";
+                echo '    ' . $line . "\n";
             }
             echo "\n";
         }
@@ -219,16 +220,18 @@ echo sprintf("  Expected Failures: \033[33m%d\033[0m\n", $expectedFailures);
 echo "\n";
 
 // Show failed example details
-if ($failed > 0 && !$verbose) {
+if ($failed > 0 && ! $verbose) {
     echo "\033[1mFailed Examples:\033[0m\n";
+
     foreach ($results as $name => $result) {
         if ($result['status'] === 'failed') {
             echo "\n  \033[31m{$name}\033[0m (exit code: {$result['exit_code']})\n";
             $outputLines = explode("\n", $result['output']);
             // Show last 10 lines of output
             $relevantLines = array_slice($outputLines, -10);
+
             foreach ($relevantLines as $line) {
-                echo "    " . $line . "\n";
+                echo '    ' . $line . "\n";
             }
         }
     }

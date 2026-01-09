@@ -106,6 +106,7 @@ if ($testMode) {
         exit(0);
     } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
         echo "Test failed: {$e->getMessage()}\n";
+
         if ($e->getHttpStatusCode() !== null) {
             echo "HTTP Status: {$e->getHttpStatusCode()}\n";
         }

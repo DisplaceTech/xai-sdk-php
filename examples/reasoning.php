@@ -160,6 +160,7 @@ try {
         echo "Completion Tokens: {$response->usage->completionTokens}\n";
         echo "Total Tokens: {$response->usage->totalTokens}\n";
     }
+
     if ($testMode) {
         echo "\n\nTest passed!\n";
     }
