@@ -16,7 +16,9 @@ declare(strict_types=1);
 namespace Displace\XaiSdk\Resources;
 
 use Displace\XaiSdk\Chat\Chat;
+use Displace\XaiSdk\Chat\DeferredCompletion;
 use Displace\XaiSdk\Chat\Messages\Message;
+use Displace\XaiSdk\Exceptions\DeferredCompletionException;
 use Displace\XaiSdk\Http\HttpClient;
 use Displace\XaiSdk\Http\StreamingResponse;
 use Displace\XaiSdk\Responses\ChatResponse;
@@ -31,6 +33,8 @@ use Displace\XaiSdk\Tools\Tool;
 class ChatResource
 {
     private const ENDPOINT = '/chat/completions';
+
+    private const DEFERRED_ENDPOINT = '/chat/completions/deferred';
 
     /**
      * Creates a new ChatResource instance.
@@ -213,5 +217,95 @@ class ChatResource
         }
 
         return $payload;
+    }
+
+    /**
+     * Creates a deferred chat completion request.
+     *
+     * This is useful for long-running requests that might timeout with the
+     * synchronous endpoint. The returned DeferredCompletion can be polled
+     * to check for completion.
+     *
+     * @param array<string, mixed> $payload The request payload.
+     *
+     * @return DeferredCompletion The deferred completion handle.
+     */
+    public function createDeferred(array $payload): DeferredCompletion
+    {
+        // Deferred requests don't support streaming
+        unset($payload['stream']);
+
+        $response = $this->httpClient->post(self::DEFERRED_ENDPOINT, $payload);
+        $body = $response->getBody();
+        $body->rewind();
+        $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
+
+        return DeferredCompletion::fromArray($data);
+    }
+
+    /**
+     * Retrieves the status of a deferred completion.
+     *
+     * @param string $id The deferred completion ID.
+     *
+     * @return DeferredCompletion The current status of the deferred completion.
+     */
+    public function retrieveDeferred(string $id): DeferredCompletion
+    {
+        $response = $this->httpClient->get(self::DEFERRED_ENDPOINT . '/' . $id);
+        $body = $response->getBody();
+        $body->rewind();
+        $data = json_decode($body->getContents(), true, 512, JSON_THROW_ON_ERROR);
+
+        return DeferredCompletion::fromArray($data);
+    }
+
+    /**
+     * Waits for a deferred completion to finish.
+     *
+     * This method polls the deferred completion until it is finished
+     * (completed, failed, or cancelled) or until the timeout is reached.
+     *
+     * @param string $id The deferred completion ID.
+     * @param int $timeout Maximum time to wait in seconds (default: 300).
+     * @param int $pollInterval Time between polls in seconds (default: 5).
+     *
+     * @throws DeferredCompletionException If the completion fails, is cancelled, or times out.
+     *
+     * @return ChatResponse The completed chat response.
+     */
+    public function awaitDeferred(
+        string $id,
+        int $timeout = 300,
+        int $pollInterval = 5,
+    ): ChatResponse {
+        $startTime = time();
+
+        while ((time() - $startTime) < $timeout) {
+            $deferred = $this->retrieveDeferred($id);
+
+            if ($deferred->isCompleted()) {
+                $result = $deferred->getResult();
+
+                if ($result === null) {
+                    throw DeferredCompletionException::resultMissing($id);
+                }
+
+                return $result;
+            }
+
+            if ($deferred->isFailed()) {
+                throw DeferredCompletionException::failed($id, $deferred->getError());
+            }
+
+            if ($deferred->isCancelled()) {
+                throw DeferredCompletionException::cancelled($id);
+            }
+
+            // Wait before next poll
+            sleep($pollInterval);
+        }
+
+        throw DeferredCompletionException::timeout($id, $timeout);
     }
 }

@@ -1,0 +1,28 @@
+{
+    "id": "def-abc123",
+    "object": "deferred_completion",
+    "status": "completed",
+    "created_at": 1704067200,
+    "completed_at": 1704067210,
+    "result": {
+        "id": "chatcmpl-def456",
+        "object": "chat.completion",
+        "created": 1704067210,
+        "model": "grok-3",
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": "This is the completed response."
+                },
+                "finish_reason": "stop"
+            }
+        ],
+        "usage": {
+            "prompt_tokens": 20,
+            "completion_tokens": 30,
+            "total_tokens": 50
+        }
+    }
+}

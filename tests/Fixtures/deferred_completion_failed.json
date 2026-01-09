@@ -1,0 +1,8 @@
+{
+    "id": "def-abc123",
+    "object": "deferred_completion",
+    "status": "failed",
+    "created_at": 1704067200,
+    "completed_at": 1704067215,
+    "error": "Internal server error while processing request"
+}
