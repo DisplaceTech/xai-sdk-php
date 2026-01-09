@@ -26,7 +26,7 @@ final class HttpConfigTest extends TestCase
 
         $this->assertEquals(300.0, $config->timeout);
         $this->assertEquals(10.0, $config->connectTimeout);
-        $this->assertEquals(0, $config->maxRetries);
+        $this->assertEquals(HttpConfig::DEFAULT_MAX_RETRIES, $config->maxRetries);
         $this->assertEquals(1.0, $config->retryDelay);
         $this->assertEquals(2.0, $config->retryMultiplier);
         $this->assertEquals(30.0, $config->maxRetryDelay);
@@ -55,15 +55,29 @@ final class HttpConfigTest extends TestCase
         $original = HttpConfig::default();
         $modified = $original->withMaxRetries(5);
 
-        $this->assertEquals(0, $original->maxRetries);
+        $this->assertEquals(HttpConfig::DEFAULT_MAX_RETRIES, $original->maxRetries);
         $this->assertEquals(5, $modified->maxRetries);
     }
 
     public function test_has_retries_returns_false_when_zero(): void
     {
-        $config = HttpConfig::default();
+        $config = HttpConfig::withoutRetries();
 
         $this->assertFalse($config->hasRetries());
+    }
+
+    public function test_default_has_retries(): void
+    {
+        $config = HttpConfig::default();
+
+        $this->assertTrue($config->hasRetries());
+    }
+
+    public function test_without_retries_creates_config_with_zero_retries(): void
+    {
+        $config = HttpConfig::withoutRetries();
+
+        $this->assertEquals(0, $config->maxRetries);
     }
 
     public function test_has_retries_returns_true_when_positive(): void

@@ -337,7 +337,12 @@ final class HttpClientTest extends TestCase
             ->method('sendRequest')
             ->willThrowException($connectionException);
 
-        $client = new HttpClient('test-api-key', $this->mockClient);
+        // Use withoutRetries() to ensure only one sendRequest call
+        $client = new HttpClient(
+            'test-api-key',
+            $this->mockClient,
+            config: HttpConfig::withoutRetries(),
+        );
 
         try {
             $client->get('/models');
