@@ -19,6 +19,7 @@ use Displace\XaiSdk\Http\HttpClient;
 use Displace\XaiSdk\Http\HttpConfig;
 use Displace\XaiSdk\Resources\ChatResource;
 use Displace\XaiSdk\Resources\CollectionsResource;
+use Displace\XaiSdk\Resources\EmbeddingsResource;
 use Displace\XaiSdk\Resources\FilesResource;
 use Displace\XaiSdk\Resources\ImageResource;
 use Displace\XaiSdk\Resources\ModelsResource;
@@ -63,6 +64,7 @@ use RuntimeException;
  * @property-read TokenizerResource $tokenize Access to tokenization API.
  * @property-read FilesResource $files Access to files API.
  * @property-read CollectionsResource $collections Access to collections API (RAG).
+ * @property-read EmbeddingsResource $embeddings Access to embeddings API.
  */
 class XaiClient
 {
@@ -85,6 +87,8 @@ class XaiClient
     private ?FilesResource $filesResource = null;
 
     private ?CollectionsResource $collectionsResource = null;
+
+    private ?EmbeddingsResource $embeddingsResource = null;
 
     /**
      * Creates a new xAI client.
@@ -122,7 +126,7 @@ class XaiClient
      *
      * @throws InvalidArgumentException If the property doesn't exist.
      *
-     * @return ChatResource|ResponsesResource|ImageResource|ModelsResource|TokenizerResource|FilesResource|CollectionsResource
+     * @return ChatResource|ResponsesResource|ImageResource|ModelsResource|TokenizerResource|FilesResource|CollectionsResource|EmbeddingsResource
      */
     public function __get(string $name): mixed
     {
@@ -134,6 +138,7 @@ class XaiClient
             'tokenize' => $this->getTokenizerResource(),
             'files' => $this->getFilesResource(),
             'collections' => $this->getCollectionsResource(),
+            'embeddings' => $this->getEmbeddingsResource(),
             default => throw new InvalidArgumentException(sprintf('Unknown property: %s', $name)),
         };
     }
@@ -148,7 +153,7 @@ class XaiClient
     public function __isset(string $name): bool
     {
         return match ($name) {
-            'chat', 'responses', 'image', 'models', 'tokenize', 'files', 'collections' => true,
+            'chat', 'responses', 'image', 'models', 'tokenize', 'files', 'collections', 'embeddings' => true,
             default => false,
         };
     }
@@ -261,6 +266,20 @@ class XaiClient
         }
 
         return $this->collectionsResource;
+    }
+
+    /**
+     * Gets the embeddings resource.
+     *
+     * @return EmbeddingsResource
+     */
+    private function getEmbeddingsResource(): EmbeddingsResource
+    {
+        if ($this->embeddingsResource === null) {
+            $this->embeddingsResource = new EmbeddingsResource($this->httpClient);
+        }
+
+        return $this->embeddingsResource;
     }
 
     /**
