@@ -22,6 +22,7 @@ use Displace\XaiSdk\Exceptions\DeferredCompletionException;
 use Displace\XaiSdk\Http\HttpClient;
 use Displace\XaiSdk\Http\StreamingResponse;
 use Displace\XaiSdk\Responses\ChatResponse;
+use Displace\XaiSdk\Tools\ServerSideTool;
 use Displace\XaiSdk\Tools\Tool;
 
 /**
@@ -208,10 +209,10 @@ class ChatResource
             }
         }
 
-        // Handle tools separately
+        // Handle tools separately - supports both Tool and ServerSideTool
         if (isset($options['tools']) && $options['tools'] !== []) {
             $payload['tools'] = array_map(
-                fn (Tool $tool) => $tool->toArray(),
+                fn (Tool|ServerSideTool $tool) => $tool->toArray(),
                 $options['tools'],
             );
         }

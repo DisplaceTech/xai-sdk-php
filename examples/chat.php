@@ -41,9 +41,10 @@ use function Displace\XaiSdk\Chat\system;
 use function Displace\XaiSdk\Chat\user;
 
 // Parse command line arguments
-$options = getopt('', ['stream', 'n::', 'help']);
+$options = getopt('', ['stream', 'n::', 'help', 'test']);
 $streaming = isset($options['stream']);
 $n = isset($options['n']) ? (int) $options['n'] : 1;
+$testMode = isset($options['test']);
 
 if (isset($options['help'])) {
     echo <<<HELP
@@ -54,6 +55,7 @@ if (isset($options['help'])) {
         Options:
           --stream      Enable streaming responses
           --n=<count>   Number of responses to generate (default: 1)
+          --test        Run a single test exchange (non-interactive)
           --help        Show this help message
 
         Environment:
@@ -64,6 +66,7 @@ if (isset($options['help'])) {
           php examples/chat.php --stream
           php examples/chat.php --n=3
           php examples/chat.php --stream --n=3
+          php examples/chat.php --test
 
         HELP;
     exit(0);
@@ -90,7 +93,26 @@ $chat = $client->chat->create(
 
 echo "xAI Chat Example\n";
 echo "================\n";
-echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . ($n > 1 ? " (n={$n})" : '') . "\n";
+echo 'Mode: ' . ($streaming ? 'Streaming' : 'Basic') . ($n > 1 ? " (n={$n})" : '') . ($testMode ? ' (test)' : '') . "\n";
+
+// Test mode: run a single exchange and exit
+if ($testMode) {
+    try {
+        $chat->append(user('Say "Hello, world!" and nothing else.'));
+        $response = $chat->sample();
+        echo "Test prompt: Say \"Hello, world!\" and nothing else.\n";
+        echo "Response: {$response->getContent()}\n";
+        echo "\nTest passed!\n";
+        exit(0);
+    } catch (Displace\XaiSdk\Exceptions\XaiException $e) {
+        echo "Test failed: {$e->getMessage()}\n";
+        if ($e->getHttpStatusCode() !== null) {
+            echo "HTTP Status: {$e->getHttpStatusCode()}\n";
+        }
+        exit(1);
+    }
+}
+
 echo "Type 'exit' to quit.\n\n";
 
 /**

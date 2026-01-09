@@ -74,6 +74,7 @@
         "test:coverage": "phpunit --testsuite Unit --coverage-html build/coverage/html --coverage-clover build/coverage/clover.xml",
         "test:unit": "phpunit --testsuite Unit",
         "test:integration": "phpunit --testsuite Integration",
+        "test:examples": "php tests/run-examples.php",
         "qa": [
             "@cs:check",
             "@stan",
@@ -88,6 +89,7 @@
         "test:coverage": "Run tests with code coverage report",
         "test:unit": "Run unit tests only",
         "test:integration": "Run integration tests only",
+        "test:examples": "Run example scripts against live API (requires XAI_API_KEY)",
         "qa": "Run all quality assurance checks (CS, Stan, Tests)"
     },
     "config": {
