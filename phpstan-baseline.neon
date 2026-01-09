@@ -1,6 +1,60 @@
 parameters:
 	ignoreErrors:
 		-
+			rawMessage: 'Method Displace\XaiSdk\Batch\ConcurrentRequests::executeBatch() return type with generic class Displace\XaiSdk\Batch\RequestResult does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Batch/ConcurrentRequests.php
+
+		-
+			rawMessage: 'Method Displace\XaiSdk\Batch\ConcurrentRequests::executeCallback() return type with generic class Displace\XaiSdk\Batch\RequestResult does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Batch/ConcurrentRequests.php
+
+		-
+			rawMessage: 'Method Displace\XaiSdk\Batch\ConcurrentRequests::run() return type with generic class Displace\XaiSdk\Batch\RequestResult does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Batch/ConcurrentRequests.php
+
+		-
+			rawMessage: 'Parameter #1 $client of static method Displace\XaiSdk\Batch\ConcurrentRequests::all() expects Displace\XaiSdk\XaiClient, Mockery\MockInterface given.'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Batch/ConcurrentRequestsTest.php
+
+		-
+			rawMessage: 'Parameter #1 $client of static method Displace\XaiSdk\Batch\ConcurrentRequests::run() expects Displace\XaiSdk\XaiClient, Mockery\MockInterface given.'
+			identifier: argument.type
+			count: 7
+			path: tests/Unit/Batch/ConcurrentRequestsTest.php
+
+		-
+			rawMessage: 'Parameter #1 $client of static method Displace\XaiSdk\Batch\ConcurrentRequests::settled() expects Displace\XaiSdk\XaiClient, Mockery\MockInterface given.'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Batch/ConcurrentRequestsTest.php
+
+		-
+			rawMessage: 'Only numeric types are allowed in *, null given on the left side.'
+			identifier: mul.leftNonNumeric
+			count: 2
+			path: tests/Unit/Batch/RequestResultTest.php
+
+		-
+			rawMessage: 'Parameter #1 $client of static method Displace\XaiSdk\Builders\ChatRequestBuilder::create() expects Displace\XaiSdk\XaiClient, Mockery\MockInterface given.'
+			identifier: argument.type
+			count: 10
+			path: tests/Unit/Builders/ChatRequestBuilderTest.php
+
+		-
+			rawMessage: 'Method Psr\SimpleCache\CacheInterface@anonymous/tests/Unit/Cache/ResponseCacheTest.php:33::setMultiple() has parameter $values with no value type specified in iterable type iterable.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Cache/ResponseCacheTest.php
+
+		-
 			rawMessage: 'Parameter #3 $body of class GuzzleHttp\Psr7\Response constructor expects Psr\Http\Message\StreamInterface|resource|string|null, string|false given.'
 			identifier: argument.type
 			count: 3
@@ -39,7 +93,7 @@ parameters:
 		-
 			rawMessage: 'Parameter #3 $body of class GuzzleHttp\Psr7\Response constructor expects Psr\Http\Message\StreamInterface|resource|string|null, string|false given.'
 			identifier: argument.type
-			count: 8
+			count: 9
 			path: tests/Unit/Http/HttpClientTest.php
 
 		-
@@ -47,6 +101,60 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Http/StreamingResponseTest.php
+
+		-
+			rawMessage: 'Cannot call method getHeaderLine() on Psr\Http\Message\RequestInterface|null.'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Middleware/MiddlewareStackTest.php
+
+		-
+			rawMessage: 'Method Displace\XaiSdk\Middleware\MiddlewareInterface@anonymous/tests/Unit/Middleware/MiddlewareStackTest.php:153::__construct() has parameter $order with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Middleware/MiddlewareStackTest.php
+
+		-
+			rawMessage: 'Method Displace\XaiSdk\Middleware\MiddlewareInterface@anonymous/tests/Unit/Middleware/MiddlewareStackTest.php:168::__construct() has parameter $order with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Middleware/MiddlewareStackTest.php
+
+		-
+			rawMessage: 'Property Displace\XaiSdk\Middleware\MiddlewareInterface@anonymous/tests/Unit/Middleware/MiddlewareStackTest.php:153::$order is never read, only written.'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Unit/Middleware/MiddlewareStackTest.php
+
+		-
+			rawMessage: 'Property Displace\XaiSdk\Middleware\MiddlewareInterface@anonymous/tests/Unit/Middleware/MiddlewareStackTest.php:168::$order is never read, only written.'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Unit/Middleware/MiddlewareStackTest.php
+
+		-
+			rawMessage: 'Call to method numberOfInvocations() of internal class PHPUnit\Framework\MockObject\Rule\InvocationOrder from outside its root namespace PHPUnit.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/Resources/ChatResourceDeferredTest.php
+
+		-
+			rawMessage: 'Match expression does not handle remaining values: int<min, 0>|int<3, max>'
+			identifier: match.unhandled
+			count: 1
+			path: tests/Unit/Resources/ChatResourceDeferredTest.php
+
+		-
+			rawMessage: 'Parameter #3 $body of class GuzzleHttp\Psr7\Response constructor expects Psr\Http\Message\StreamInterface|resource|string|null, string|false given.'
+			identifier: argument.type
+			count: 10
+			path: tests/Unit/Resources/ChatResourceDeferredTest.php
+
+		-
+			rawMessage: 'Parameter #3 $body of class GuzzleHttp\Psr7\Response constructor expects Psr\Http\Message\StreamInterface|resource|string|null, string|false given.'
+			identifier: argument.type
+			count: 9
+			path: tests/Unit/Resources/EmbeddingsResourceTest.php
 
 		-
 			rawMessage: 'Offset ''choices'' might not exist on array<string, mixed>|null.'

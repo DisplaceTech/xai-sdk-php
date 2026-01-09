@@ -115,6 +115,16 @@ final class CachingMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Gets the response cache.
+     *
+     * @return ResponseCache
+     */
+    public function getResponseCache(): ResponseCache
+    {
+        return $this->responseCache;
+    }
+
+    /**
      * Parses the request body.
      *
      * @param RequestInterface $request The request.
@@ -182,15 +192,5 @@ final class CachingMiddleware implements MiddlewareInterface
         }
 
         return $relevant;
-    }
-
-    /**
-     * Gets the response cache.
-     *
-     * @return ResponseCache
-     */
-    public function getResponseCache(): ResponseCache
-    {
-        return $this->responseCache;
     }
 }

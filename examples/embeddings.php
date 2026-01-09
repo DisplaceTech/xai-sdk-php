@@ -118,9 +118,9 @@ try {
             input: $texts,
         );
 
-        echo "Generated " . $response->count() . " embeddings\n";
+        echo 'Generated ' . $response->count() . " embeddings\n";
         echo "Model: {$response->model}\n";
-        echo "Dimensions: " . ($response->data[0]?->getDimensions() ?? 'N/A') . "\n\n";
+        echo 'Dimensions: ' . ($response->data[0]?->getDimensions() ?? 'N/A') . "\n\n";
 
         // Compare all pairs
         echo "Similarity Matrix:\n";
@@ -158,7 +158,7 @@ try {
             input: $texts,
         );
 
-        echo "Generated " . $response->count() . " embeddings\n";
+        echo 'Generated ' . $response->count() . " embeddings\n";
         echo "Model: {$response->model}\n";
         echo "Total tokens: {$response->usage->totalTokens}\n";
         echo "Prompt tokens: {$response->usage->promptTokens}\n\n";

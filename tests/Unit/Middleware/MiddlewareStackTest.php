@@ -60,7 +60,7 @@ final class MiddlewareStackTest extends TestCase
 
     public function test_remove_middleware(): void
     {
-        $middleware = new class implements MiddlewareInterface {
+        $middleware = new class() implements MiddlewareInterface {
             public function process(RequestInterface $request, callable $next): ResponseInterface
             {
                 return $next($request);
@@ -80,7 +80,7 @@ final class MiddlewareStackTest extends TestCase
 
     public function test_has_middleware(): void
     {
-        $middleware = new class implements MiddlewareInterface {
+        $middleware = new class() implements MiddlewareInterface {
             public function process(RequestInterface $request, callable $next): ResponseInterface
             {
                 return $next($request);
@@ -122,7 +122,7 @@ final class MiddlewareStackTest extends TestCase
     {
         $stack = new MiddlewareStack();
 
-        $middleware = new class implements MiddlewareInterface {
+        $middleware = new class() implements MiddlewareInterface {
             public function process(RequestInterface $request, callable $next): ResponseInterface
             {
                 $request = $request->withHeader('X-Test', 'value');
@@ -150,7 +150,7 @@ final class MiddlewareStackTest extends TestCase
         $stack = new MiddlewareStack();
         $order = [];
 
-        $first = new class ($order) implements MiddlewareInterface {
+        $first = new class($order) implements MiddlewareInterface {
             public function __construct(private array &$order)
             {
             }
@@ -165,7 +165,7 @@ final class MiddlewareStackTest extends TestCase
             }
         };
 
-        $second = new class ($order) implements MiddlewareInterface {
+        $second = new class($order) implements MiddlewareInterface {
             public function __construct(private array &$order)
             {
             }
@@ -204,7 +204,7 @@ final class MiddlewareStackTest extends TestCase
         $stack = new MiddlewareStack();
         $handlerCalled = false;
 
-        $shortCircuit = new class implements MiddlewareInterface {
+        $shortCircuit = new class() implements MiddlewareInterface {
             public function process(RequestInterface $request, callable $next): ResponseInterface
             {
                 return new Response(401, [], 'Unauthorized');
@@ -228,7 +228,7 @@ final class MiddlewareStackTest extends TestCase
     {
         $stack = new MiddlewareStack();
 
-        $middleware = new class implements MiddlewareInterface {
+        $middleware = new class() implements MiddlewareInterface {
             public function process(RequestInterface $request, callable $next): ResponseInterface
             {
                 $response = $next($request);
@@ -277,7 +277,7 @@ final class MiddlewareStackTest extends TestCase
 
     private function createMiddleware(): MiddlewareInterface
     {
-        return new class implements MiddlewareInterface {
+        return new class() implements MiddlewareInterface {
             public function process(RequestInterface $request, callable $next): ResponseInterface
             {
                 return $next($request);

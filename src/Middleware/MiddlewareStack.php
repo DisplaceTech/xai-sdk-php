@@ -51,6 +51,28 @@ final class MiddlewareStack
     }
 
     /**
+     * Creates an empty middleware stack.
+     *
+     * @return self
+     */
+    public static function empty(): self
+    {
+        return new self();
+    }
+
+    /**
+     * Creates a middleware stack from an array of middleware.
+     *
+     * @param array<MiddlewareInterface> $middleware The middleware.
+     *
+     * @return self
+     */
+    public static function of(array $middleware): self
+    {
+        return new self($middleware);
+    }
+
+    /**
      * Adds middleware to the end of the stack.
      *
      * Middleware added later will be executed last for requests,
@@ -181,27 +203,5 @@ final class MiddlewareStack
     public function wrap(callable $handler): callable
     {
         return fn (RequestInterface $request) => $this->handle($request, $handler);
-    }
-
-    /**
-     * Creates an empty middleware stack.
-     *
-     * @return self
-     */
-    public static function empty(): self
-    {
-        return new self();
-    }
-
-    /**
-     * Creates a middleware stack from an array of middleware.
-     *
-     * @param array<MiddlewareInterface> $middleware The middleware.
-     *
-     * @return self
-     */
-    public static function of(array $middleware): self
-    {
-        return new self($middleware);
     }
 }
