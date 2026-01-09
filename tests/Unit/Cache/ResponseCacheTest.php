@@ -15,8 +15,9 @@ declare(strict_types=1);
 
 namespace Displace\XaiSdk\Tests\Unit\Cache;
 
-use Displace\XaiSdk\Cache\CachedResponse;
+use DateInterval;
 use Displace\XaiSdk\Cache\CacheConfig;
+use Displace\XaiSdk\Cache\CachedResponse;
 use Displace\XaiSdk\Cache\ResponseCache;
 use Displace\XaiSdk\Tests\TestCase;
 use Psr\SimpleCache\CacheInterface;
@@ -29,7 +30,7 @@ final class ResponseCacheTest extends TestCase
     {
         parent::setUp();
 
-        $this->cache = new class implements CacheInterface {
+        $this->cache = new class() implements CacheInterface {
             /** @var array<string, mixed> */
             private array $data = [];
 
@@ -38,7 +39,7 @@ final class ResponseCacheTest extends TestCase
                 return $this->data[$key] ?? $default;
             }
 
-            public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+            public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool
             {
                 $this->data[$key] = $value;
 
@@ -62,6 +63,7 @@ final class ResponseCacheTest extends TestCase
             public function getMultiple(iterable $keys, mixed $default = null): iterable
             {
                 $result = [];
+
                 foreach ($keys as $key) {
                     $result[$key] = $this->get($key, $default);
                 }
@@ -69,7 +71,7 @@ final class ResponseCacheTest extends TestCase
                 return $result;
             }
 
-            public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
+            public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool
             {
                 foreach ($values as $key => $value) {
                     $this->set($key, $value, $ttl);

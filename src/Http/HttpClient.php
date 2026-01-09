@@ -283,55 +283,6 @@ class HttpClient
     }
 
     /**
-     * Performs the actual HTTP request.
-     *
-     * @param RequestInterface $request The request to send
-     * @param bool $stream Whether to stream the response
-     *
-     * @throws XaiException
-     *
-     * @return ResponseInterface
-     */
-    private function doSend(RequestInterface $request, bool $stream = false): ResponseInterface
-    {
-        try {
-            // If using Guzzle with streaming, we need to handle it specially
-            if ($stream && $this->client instanceof GuzzleClient) {
-                /** @var ResponseInterface $response */
-                $response = $this->client->send($request, [
-                    'stream' => true,
-                    'timeout' => $this->config->timeout,
-                    'connect_timeout' => $this->config->connectTimeout,
-                ]);
-            } elseif ($this->client instanceof GuzzleClient) {
-                /** @var ResponseInterface $response */
-                $response = $this->client->send($request, [
-                    'timeout' => $this->config->timeout,
-                    'connect_timeout' => $this->config->connectTimeout,
-                ]);
-            } else {
-                $response = $this->client->sendRequest($request);
-            }
-
-            $this->handleErrorResponse($request, $response);
-
-            return $response;
-        } catch (ConnectException $e) {
-            throw ApiException::connectionError(
-                $e->getMessage(),
-                $request,
-                $e,
-            );
-        } catch (ClientExceptionInterface $e) {
-            throw ApiException::connectionError(
-                $e->getMessage(),
-                $request,
-                $e,
-            );
-        }
-    }
-
-    /**
      * Gets the base URL.
      *
      * @return string
@@ -409,6 +360,55 @@ class HttpClient
             headers: $this->defaultHeaders,
             middlewareStack: $middlewareStack,
         );
+    }
+
+    /**
+     * Performs the actual HTTP request.
+     *
+     * @param RequestInterface $request The request to send
+     * @param bool $stream Whether to stream the response
+     *
+     * @throws XaiException
+     *
+     * @return ResponseInterface
+     */
+    private function doSend(RequestInterface $request, bool $stream = false): ResponseInterface
+    {
+        try {
+            // If using Guzzle with streaming, we need to handle it specially
+            if ($stream && $this->client instanceof GuzzleClient) {
+                /** @var ResponseInterface $response */
+                $response = $this->client->send($request, [
+                    'stream' => true,
+                    'timeout' => $this->config->timeout,
+                    'connect_timeout' => $this->config->connectTimeout,
+                ]);
+            } elseif ($this->client instanceof GuzzleClient) {
+                /** @var ResponseInterface $response */
+                $response = $this->client->send($request, [
+                    'timeout' => $this->config->timeout,
+                    'connect_timeout' => $this->config->connectTimeout,
+                ]);
+            } else {
+                $response = $this->client->sendRequest($request);
+            }
+
+            $this->handleErrorResponse($request, $response);
+
+            return $response;
+        } catch (ConnectException $e) {
+            throw ApiException::connectionError(
+                $e->getMessage(),
+                $request,
+                $e,
+            );
+        } catch (ClientExceptionInterface $e) {
+            throw ApiException::connectionError(
+                $e->getMessage(),
+                $request,
+                $e,
+            );
+        }
     }
 
     /**

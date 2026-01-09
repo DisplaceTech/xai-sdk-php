@@ -97,6 +97,7 @@ final readonly class RequestResult
             );
         }
 
+        /** @var T */
         return $this->value;
     }
 
@@ -128,7 +129,12 @@ final readonly class RequestResult
      */
     public function getValueOrDefault(mixed $default): mixed
     {
-        return $this->success ? $this->value : $default;
+        if ($this->success) {
+            /** @var T */
+            return $this->value;
+        }
+
+        return $default;
     }
 
     /**
@@ -143,6 +149,7 @@ final readonly class RequestResult
     public function getValueOrElse(callable $callback): mixed
     {
         if ($this->success) {
+            /** @var T */
             return $this->value;
         }
 
@@ -168,7 +175,10 @@ final readonly class RequestResult
             return new self(null, $this->error, false);
         }
 
-        return self::success($mapper($this->value));
+        /** @var T $value */
+        $value = $this->value;
+
+        return self::success($mapper($value));
     }
 
     /**
@@ -187,7 +197,10 @@ final readonly class RequestResult
             return new self(null, $this->error, false);
         }
 
-        return $mapper($this->value);
+        /** @var T $value */
+        $value = $this->value;
+
+        return $mapper($value);
     }
 
     /**
@@ -200,9 +213,13 @@ final readonly class RequestResult
     public function getOrThrow(): mixed
     {
         if (! $this->success) {
-            throw $this->error;
+            /** @var Throwable $error */
+            $error = $this->error;
+
+            throw $error;
         }
 
+        /** @var T */
         return $this->value;
     }
 }

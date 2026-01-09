@@ -212,11 +212,9 @@ final class ResponseCache
         }
 
         // If requireSeed is enabled, only cache requests with a seed
-        if ($this->config->requireSeed && ! isset($body['seed'])) {
-            return false;
-        }
+        return ! ($this->config->requireSeed && ! isset($body['seed']))
 
-        return true;
+        ;
     }
 
     /**

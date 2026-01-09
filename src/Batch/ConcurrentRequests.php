@@ -95,49 +95,6 @@ final class ConcurrentRequests
     }
 
     /**
-     * Executes a batch of callbacks.
-     *
-     * This method uses parallel execution when the parallel extension is available,
-     * or falls back to sequential execution otherwise.
-     *
-     * @param XaiClient $client The xAI client.
-     * @param array<int, callable(XaiClient): mixed> $callbacks Batch of callbacks with original indices.
-     *
-     * @return array<int, RequestResult> Results keyed by original index.
-     */
-    private static function executeBatch(XaiClient $client, array $callbacks): array
-    {
-        $results = [];
-
-        // Execute callbacks sequentially (async not possible without fibers/parallel)
-        // Each callback gets a fresh client reference but same underlying HTTP client
-        foreach ($callbacks as $index => $callback) {
-            $results[$index] = self::executeCallback($client, $callback);
-        }
-
-        return $results;
-    }
-
-    /**
-     * Executes a single callback and wraps the result.
-     *
-     * @param XaiClient $client The xAI client.
-     * @param callable(XaiClient): mixed $callback The callback to execute.
-     *
-     * @return RequestResult The wrapped result.
-     */
-    private static function executeCallback(XaiClient $client, callable $callback): RequestResult
-    {
-        try {
-            $value = $callback($client);
-
-            return RequestResult::success($value);
-        } catch (Throwable $e) {
-            return RequestResult::failure($e);
-        }
-    }
-
-    /**
      * Executes multiple request callbacks and collects all successful results.
      *
      * Similar to run(), but only returns successful results. Throws a BatchException
@@ -205,5 +162,48 @@ final class ConcurrentRequests
         }
 
         return $successes;
+    }
+
+    /**
+     * Executes a batch of callbacks.
+     *
+     * This method uses parallel execution when the parallel extension is available,
+     * or falls back to sequential execution otherwise.
+     *
+     * @param XaiClient $client The xAI client.
+     * @param array<int, callable(XaiClient): mixed> $callbacks Batch of callbacks with original indices.
+     *
+     * @return array<int, RequestResult> Results keyed by original index.
+     */
+    private static function executeBatch(XaiClient $client, array $callbacks): array
+    {
+        $results = [];
+
+        // Execute callbacks sequentially (async not possible without fibers/parallel)
+        // Each callback gets a fresh client reference but same underlying HTTP client
+        foreach ($callbacks as $index => $callback) {
+            $results[$index] = self::executeCallback($client, $callback);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Executes a single callback and wraps the result.
+     *
+     * @param XaiClient $client The xAI client.
+     * @param callable(XaiClient): mixed $callback The callback to execute.
+     *
+     * @return RequestResult The wrapped result.
+     */
+    private static function executeCallback(XaiClient $client, callable $callback): RequestResult
+    {
+        try {
+            $value = $callback($client);
+
+            return RequestResult::success($value);
+        } catch (Throwable $e) {
+            return RequestResult::failure($e);
+        }
     }
 }

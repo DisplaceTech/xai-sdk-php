@@ -51,7 +51,7 @@ final class RetryMiddleware implements MiddlewareInterface
      * @param float $maxDelay Maximum delay in seconds.
      * @param float $multiplier Multiplier for exponential backoff.
      * @param array<int> $retryStatusCodes HTTP status codes that trigger retries.
-     * @param LoggerInterface|null $logger Optional logger for retry events.
+     * @param LoggerInterface $logger Logger for retry events (defaults to NullLogger).
      */
     public function __construct(
         private readonly int $maxRetries = 3,
