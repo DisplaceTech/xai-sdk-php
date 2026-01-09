@@ -25,7 +25,12 @@ use Displace\XaiSdk\Http\HttpClient;
  * generate vector embeddings for text inputs. These embeddings can be used
  * for semantic similarity, search, clustering, and other ML applications.
  *
- * @see https://docs.x.ai/docs/guides/embeddings
+ * NOTE: As of January 2026, the embeddings API endpoint exists in xAI's
+ * infrastructure but no embedding models are publicly available yet.
+ * This feature will become functional when xAI releases embedding models.
+ * Check xAI's documentation for current model availability.
+ *
+ * @see https://docs.x.ai/docs
  */
 class EmbeddingsResource
 {

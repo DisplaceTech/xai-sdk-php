@@ -20,6 +20,11 @@
  * - Clustering documents
  * - Search and retrieval
  *
+ * IMPORTANT: As of January 2026, the xAI embeddings API endpoint exists
+ * but no embedding models are publicly available yet. This example will
+ * return a 404 error until xAI releases embedding models. Check the xAI
+ * documentation for current model availability.
+ *
  * Usage:
  *   php examples/embeddings.php                    # Basic single embedding
  *   php examples/embeddings.php --batch            # Batch embeddings
@@ -218,6 +223,12 @@ try {
 
     if ($e->getHttpStatusCode() !== null) {
         echo "HTTP Status: {$e->getHttpStatusCode()}\n";
+    }
+
+    // Provide helpful context for common errors
+    if ($e->getHttpStatusCode() === 404) {
+        echo "\nNote: The xAI embeddings API endpoint may not be publicly available yet.\n";
+        echo "Check https://docs.x.ai/docs for current model availability.\n";
     }
     exit(1);
 }

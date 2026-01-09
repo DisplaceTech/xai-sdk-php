@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Embeddings API Support
+#### Embeddings API Support (Coming Soon)
+> **Note**: The xAI embeddings endpoint exists but no embedding models are publicly
+> available yet. This feature will become functional when xAI releases embedding models.
+
 - **EmbeddingsResource**: New resource for the `/v1/embeddings` endpoint
   - `create()` method supporting single string or batch array input
   - Optional `encodingFormat` and `dimensions` parameters
