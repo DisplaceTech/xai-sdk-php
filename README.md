@@ -157,6 +157,7 @@ The xAI PHP SDK provides comprehensive feature coverage:
 | **Structured Outputs** | Type-safe JSON responses with schemas | [structured_outputs.php](/examples/structured_outputs.php) |
 | **Reasoning Models** | Extended thinking with configurable effort | [reasoning.php](/examples/reasoning.php) |
 | **Server-Side Tools** | Web search, X search, code execution | [server_side_tools.php](/examples/server_side_tools.php) |
+| **Search (X & Web)** | Real-time X and web search via /v1/responses | [search.php](/examples/search.php) |
 | **Collections (RAG)** | Document management and semantic search | [collections.php](/examples/collections.php) |
 | **Telemetry** | OpenTelemetry tracing integration | [telemetry.php](/examples/telemetry.php) |
 

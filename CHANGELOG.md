@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-08
+
+### Added
+
+#### Responses API Support
+- **ResponsesResource**: New resource for the `/v1/responses` endpoint
+  - Required for server-side tools (x_search, web_search, code_execution)
+  - Uses `input` instead of `messages` for request format
+  - Properly formats tools with `type` at root level
+- **ResponsesResponse**: Response parser for the responses endpoint format
+  - Parses `output` array structure (vs `choices` in chat completions)
+  - Extracts text from `output_text` content blocks
+  - Handles `custom_tool_call` entries for tool execution tracking
+- **OutputItem**: Represents items in the responses output array
+  - Supports `message` and `custom_tool_call` types
+  - Provides `getText()` helper for extracting message content
+- **ContentBlock**: Represents content blocks within message outputs
+  - Supports `output_text` and `refusal` block types
+- **toResponsesArray()**: New method on all ServerSideTool implementations
+  - XSearch, WebSearch, CodeExecution, CollectionsSearch, McpTool
+  - Formats tools correctly for /v1/responses endpoint
+
+#### New Example
+- **search.php**: Comprehensive example demonstrating X search and web search
+  - Shows single tool usage with x_search
+  - Shows single tool usage with web_search
+  - Shows combined multi-tool search scenarios
+  - Demonstrates tool call tracking and usage statistics
+
+### Fixed
+- **Server-side tools now work correctly** - Previously, using `ServerSideTools::xSearch()` or `ServerSideTools::webSearch()` would fail with "unknown variant" error because the SDK was sending requests to `/chat/completions` which only supports `type: function` tools. Server-side tools now route through the new `/v1/responses` endpoint. (Fixes #6)
+- **Response format parsing for server-side tools** - The `/v1/responses` endpoint returns a different format with `output` array containing `output_text` blocks. The SDK now correctly parses this format. (Fixes #7)
+
+### Changed
+- **XaiClient**: Added `responses` property for accessing ResponsesResource
+- **ServerSideTool interface**: Added `toResponsesArray()` method requirement
+- **README.md**: Added "Search (X & Web)" feature to features table
+
 ## [1.0.0] - 2026-01-08
 
 ### Added

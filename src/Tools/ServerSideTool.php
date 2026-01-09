@@ -32,7 +32,18 @@ interface ServerSideTool
     /**
      * Converts the tool to an array representation for API requests.
      *
+     * This format is used for /chat/completions endpoint (legacy).
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array;
+
+    /**
+     * Converts the tool to an array representation for /v1/responses endpoint.
+     *
+     * The responses endpoint uses a different format with 'type' at the root level.
+     *
+     * @return array<string, mixed>
+     */
+    public function toResponsesArray(): array;
 }

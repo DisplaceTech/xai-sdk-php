@@ -103,4 +103,29 @@ readonly class CollectionsSearch implements ServerSideTool
             self::TYPE => $config,
         ];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function toResponsesArray(): array
+    {
+        $result = [
+            'type' => self::TYPE,
+            'collection_ids' => $this->collectionIds,
+        ];
+
+        if ($this->limit !== null) {
+            $result['limit'] = $this->limit;
+        }
+
+        if ($this->instructions !== null) {
+            $result['instructions'] = $this->instructions;
+        }
+
+        if ($this->retrievalMode !== null) {
+            $result['retrieval_mode'] = $this->retrievalMode;
+        }
+
+        return $result;
+    }
 }

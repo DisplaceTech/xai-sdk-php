@@ -107,4 +107,32 @@ readonly class XSearch implements ServerSideTool
             self::TYPE => $config,
         ];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function toResponsesArray(): array
+    {
+        $result = [
+            'type' => self::TYPE,
+        ];
+
+        if ($this->fromDate !== null) {
+            $result['from_date'] = $this->fromDate->format('Y-m-d');
+        }
+
+        if ($this->toDate !== null) {
+            $result['to_date'] = $this->toDate->format('Y-m-d');
+        }
+
+        if ($this->allowedXHandles !== null) {
+            $result['x_handles'] = $this->allowedXHandles;
+        }
+
+        if ($this->excludedXHandles !== null) {
+            $result['excluded_x_handles'] = $this->excludedXHandles;
+        }
+
+        return $result;
+    }
 }

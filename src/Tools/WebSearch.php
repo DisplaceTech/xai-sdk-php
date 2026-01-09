@@ -89,4 +89,24 @@ readonly class WebSearch implements ServerSideTool
             self::TYPE => $config,
         ];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function toResponsesArray(): array
+    {
+        $result = [
+            'type' => self::TYPE,
+        ];
+
+        if ($this->excludedDomains !== null) {
+            $result['excluded_websites'] = $this->excludedDomains;
+        }
+
+        if ($this->allowedDomains !== null) {
+            $result['allowed_websites'] = $this->allowedDomains;
+        }
+
+        return $result;
+    }
 }

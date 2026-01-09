@@ -97,4 +97,37 @@ readonly class McpTool implements ServerSideTool
             self::TYPE => $config,
         ];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function toResponsesArray(): array
+    {
+        $result = [
+            'type' => self::TYPE,
+            'server_url' => $this->serverUrl,
+        ];
+
+        if ($this->serverLabel !== null) {
+            $result['server_label'] = $this->serverLabel;
+        }
+
+        if ($this->serverDescription !== null) {
+            $result['server_description'] = $this->serverDescription;
+        }
+
+        if ($this->allowedToolNames !== null) {
+            $result['allowed_tool_names'] = $this->allowedToolNames;
+        }
+
+        if ($this->authorization !== null) {
+            $result['authorization'] = $this->authorization;
+        }
+
+        if ($this->extraHeaders !== null) {
+            $result['extra_headers'] = $this->extraHeaders;
+        }
+
+        return $result;
+    }
 }

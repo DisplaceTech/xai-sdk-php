@@ -64,4 +64,14 @@ readonly class CodeExecution implements ServerSideTool
             self::TYPE => new stdClass(),
         ];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function toResponsesArray(): array
+    {
+        return [
+            'type' => self::TYPE,
+        ];
+    }
 }

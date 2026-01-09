@@ -22,6 +22,7 @@ use Displace\XaiSdk\Resources\CollectionsResource;
 use Displace\XaiSdk\Resources\FilesResource;
 use Displace\XaiSdk\Resources\ImageResource;
 use Displace\XaiSdk\Resources\ModelsResource;
+use Displace\XaiSdk\Resources\ResponsesResource;
 use Displace\XaiSdk\Resources\TokenizerResource;
 use InvalidArgumentException;
 use Psr\Http\Client\ClientInterface;
@@ -56,6 +57,7 @@ use RuntimeException;
  * ```
  *
  * @property-read ChatResource $chat Access to chat completions API.
+ * @property-read ResponsesResource $responses Access to responses API (for server-side tools).
  * @property-read ImageResource $image Access to image generation API.
  * @property-read ModelsResource $models Access to models API.
  * @property-read TokenizerResource $tokenize Access to tokenization API.
@@ -71,6 +73,8 @@ class XaiClient
     private HttpClient $httpClient;
 
     private ?ChatResource $chatResource = null;
+
+    private ?ResponsesResource $responsesResource = null;
 
     private ?ImageResource $imageResource = null;
 
@@ -118,12 +122,13 @@ class XaiClient
      *
      * @throws InvalidArgumentException If the property doesn't exist.
      *
-     * @return ChatResource|ImageResource|ModelsResource|TokenizerResource|FilesResource|CollectionsResource
+     * @return ChatResource|ResponsesResource|ImageResource|ModelsResource|TokenizerResource|FilesResource|CollectionsResource
      */
     public function __get(string $name): mixed
     {
         return match ($name) {
             'chat' => $this->getChatResource(),
+            'responses' => $this->getResponsesResource(),
             'image' => $this->getImageResource(),
             'models' => $this->getModelsResource(),
             'tokenize' => $this->getTokenizerResource(),
@@ -143,7 +148,7 @@ class XaiClient
     public function __isset(string $name): bool
     {
         return match ($name) {
-            'chat', 'image', 'models', 'tokenize', 'files', 'collections' => true,
+            'chat', 'responses', 'image', 'models', 'tokenize', 'files', 'collections' => true,
             default => false,
         };
     }
@@ -172,6 +177,20 @@ class XaiClient
         }
 
         return $this->chatResource;
+    }
+
+    /**
+     * Gets the responses resource.
+     *
+     * @return ResponsesResource
+     */
+    private function getResponsesResource(): ResponsesResource
+    {
+        if ($this->responsesResource === null) {
+            $this->responsesResource = new ResponsesResource($this->httpClient);
+        }
+
+        return $this->responsesResource;
     }
 
     /**
