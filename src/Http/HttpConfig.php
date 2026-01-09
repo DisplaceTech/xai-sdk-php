@@ -24,11 +24,16 @@ namespace Displace\XaiSdk\Http;
 readonly class HttpConfig
 {
     /**
+     * Default number of retries (Python SDK parity).
+     */
+    public const DEFAULT_MAX_RETRIES = 3;
+
+    /**
      * Creates a new HTTP configuration.
      *
      * @param float $timeout Request timeout in seconds (default: 300)
      * @param float $connectTimeout Connection timeout in seconds (default: 10)
-     * @param int $maxRetries Maximum number of retries for failed requests (default: 0, no retries)
+     * @param int $maxRetries Maximum number of retries for failed requests (default: 3, for Python SDK parity)
      * @param float $retryDelay Base delay between retries in seconds (default: 1.0)
      * @param float $retryMultiplier Multiplier for exponential backoff (default: 2.0)
      * @param float $maxRetryDelay Maximum delay between retries in seconds (default: 30.0)
@@ -38,7 +43,7 @@ readonly class HttpConfig
     public function __construct(
         public float $timeout = 300.0,
         public float $connectTimeout = 10.0,
-        public int $maxRetries = 0,
+        public int $maxRetries = self::DEFAULT_MAX_RETRIES,
         public float $retryDelay = 1.0,
         public float $retryMultiplier = 2.0,
         public float $maxRetryDelay = 30.0,
@@ -67,6 +72,19 @@ readonly class HttpConfig
     public static function withRetries(int $maxRetries = 3): self
     {
         return new self(maxRetries: $maxRetries);
+    }
+
+    /**
+     * Creates a configuration with retries disabled.
+     *
+     * Use this when you want to handle retries yourself or when
+     * retries are not appropriate for your use case.
+     *
+     * @return self
+     */
+    public static function withoutRetries(): self
+    {
+        return new self(maxRetries: 0);
     }
 
     /**
