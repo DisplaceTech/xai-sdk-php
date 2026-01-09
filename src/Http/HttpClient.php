@@ -21,6 +21,8 @@ use Displace\XaiSdk\Exceptions\BadRequestException;
 use Displace\XaiSdk\Exceptions\RateLimitException;
 use Displace\XaiSdk\Exceptions\ServerException;
 use Displace\XaiSdk\Exceptions\XaiException;
+use Displace\XaiSdk\Middleware\MiddlewareInterface;
+use Displace\XaiSdk\Middleware\MiddlewareStack;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
@@ -54,6 +56,8 @@ class HttpClient
     /** @var array<string, string> */
     private array $defaultHeaders;
 
+    private MiddlewareStack $middlewareStack;
+
     /**
      * Creates a new HttpClient instance.
      *
@@ -62,6 +66,7 @@ class HttpClient
      * @param string $baseUrl The base URL for API requests
      * @param HttpConfig|null $config HTTP configuration (timeouts, retries, etc.)
      * @param array<string, string> $headers Additional default headers
+     * @param MiddlewareStack|null $middlewareStack Middleware stack for request/response processing
      */
     public function __construct(
         string $apiKey,
@@ -69,6 +74,7 @@ class HttpClient
         string $baseUrl = self::DEFAULT_BASE_URL,
         ?HttpConfig $config = null,
         array $headers = [],
+        ?MiddlewareStack $middlewareStack = null,
     ) {
         $this->apiKey = $apiKey;
         $this->baseUrl = rtrim($baseUrl, '/');
@@ -84,6 +90,8 @@ class HttpClient
             'X-SDK-Version' => sprintf('php/%s', self::SDK_VERSION),
             'X-SDK-Language' => sprintf('php/%s', PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION),
         ], $headers);
+
+        $this->middlewareStack = $middlewareStack ?? new MiddlewareStack();
     }
 
     /**
@@ -251,6 +259,9 @@ class HttpClient
     /**
      * Sends a request using the PSR-18 client.
      *
+     * If middleware is configured, the request will be processed through
+     * the middleware stack before being sent to the underlying client.
+     *
      * @param RequestInterface $request The request to send
      * @param bool $stream Whether to stream the response
      *
@@ -259,6 +270,29 @@ class HttpClient
      * @return ResponseInterface
      */
     public function send(RequestInterface $request, bool $stream = false): ResponseInterface
+    {
+        // Create the final handler
+        $handler = fn (RequestInterface $req) => $this->doSend($req, $stream);
+
+        // If we have middleware, wrap the handler
+        if ($this->middlewareStack->count() > 0) {
+            return $this->middlewareStack->handle($request, $handler);
+        }
+
+        return $handler($request);
+    }
+
+    /**
+     * Performs the actual HTTP request.
+     *
+     * @param RequestInterface $request The request to send
+     * @param bool $stream Whether to stream the response
+     *
+     * @throws XaiException
+     *
+     * @return ResponseInterface
+     */
+    private function doSend(RequestInterface $request, bool $stream = false): ResponseInterface
     {
         try {
             // If using Guzzle with streaming, we need to handle it specially
@@ -329,6 +363,52 @@ class HttpClient
         }
 
         return substr($this->apiKey, 0, 4) . '...' . substr($this->apiKey, -4);
+    }
+
+    /**
+     * Gets the middleware stack.
+     *
+     * @return MiddlewareStack
+     */
+    public function getMiddlewareStack(): MiddlewareStack
+    {
+        return $this->middlewareStack;
+    }
+
+    /**
+     * Adds middleware to the stack.
+     *
+     * @param MiddlewareInterface $middleware The middleware to add.
+     *
+     * @return $this
+     */
+    public function withMiddleware(MiddlewareInterface $middleware): self
+    {
+        $this->middlewareStack->push($middleware);
+
+        return $this;
+    }
+
+    /**
+     * Creates a new client with the given middleware stack.
+     *
+     * This creates a new HttpClient instance with the same configuration
+     * but a different middleware stack, preserving immutability.
+     *
+     * @param MiddlewareStack $middlewareStack The new middleware stack.
+     *
+     * @return self
+     */
+    public function withMiddlewareStack(MiddlewareStack $middlewareStack): self
+    {
+        return new self(
+            apiKey: $this->apiKey,
+            client: $this->client,
+            baseUrl: $this->baseUrl,
+            config: $this->config,
+            headers: $this->defaultHeaders,
+            middlewareStack: $middlewareStack,
+        );
     }
 
     /**
