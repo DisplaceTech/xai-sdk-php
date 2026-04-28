@@ -71,7 +71,11 @@ readonly class ChatResponse
      */
     public function getContent(): string
     {
-        return $this->choices[0]?->message->content ?? '';
+        if ($this->choices === []) {
+            return '';
+        }
+
+        return $this->choices[0]->message->content;
     }
 
     /**
