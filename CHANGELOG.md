@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-04-27
+
+### Changed
+
+- Bumped `codecov/codecov-action` from v5 to v6 in the Tests workflow.
+
+### Fixed
+
+- Forced `php-cs-fixer` into sequential mode in `.php-cs-fixer.php`. The
+  3.95.x parallel runner crashes with `is_file(false)` when it cannot
+  auto-detect the PHP binary, which surfaced under `setup-php`-installed
+  toolchains in CI.
+- Resolved two PHPStan 2.1 bleeding-edge findings exposed once the
+  toolchain was unblocked:
+  - `ChatResponse::getContent()` no longer relies on `??` against a
+    non-nullable property; it now guards on an empty `choices` array.
+  - `StreamIterator::$generator` now declares its `Generator<int,
+    array<string, mixed>>` generic types.
+- Cleaned up an empty closure body in `tests/Unit/Tools/ToolTest.php`
+  flagged by the upgraded fixer.
+
+## [1.2.2] - 2026-01-09
+
+### Added
+
+- **Example test runner** (`tests/run-examples.php`): validates every SDK
+  example against the live xAI API so CI can catch upstream API
+  regressions early. Includes a `--test` non-interactive mode in each
+  example.
+
+### Fixed
+
+- `ApiException`: cast error code to string (the xAI API returns an
+  integer).
+- `ChatResource`: accept `ServerSideTool` instances in the `tools` array.
+- `Tool::toArray()`: return `parameters` as an array rather than a JSON
+  string.
+- `examples/image_generation.php`: use the correct model name
+  (`grok-2-image-1212`).
+- `examples/search.php`: use `grok-4` for server-side tools.
+
+## [1.2.1] - 2026-01-08
+
+### Fixed
+
+- Resolved code style and static analysis issues across the v1.2.0
+  feature work (batch concurrency, middleware stack, response cache,
+  embeddings resource). No behavior changes — internals only.
+- Refreshed `phpstan-baseline.neon` to reflect the new code paths added
+  in v1.2.0.
+
 ## [1.2.0] - 2026-01-08
 
 ### Added
