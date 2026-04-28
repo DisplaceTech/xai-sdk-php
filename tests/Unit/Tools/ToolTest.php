@@ -111,7 +111,8 @@ final class ToolTest extends TestCase
             bool $boolParam,
             array $arrayParam,
             string $stringParam,
-        ): void {};
+        ): void {
+        };
 
         $tool = Tool::fromCallable($callable, 'type_test', 'Test types');
 

@@ -32,6 +32,7 @@ class StreamIterator implements Iterator
 {
     private SseParser $parser;
 
+    /** @var Generator<int, array<string, mixed>> */
     private Generator $generator;
 
     /** @var array<string, mixed>|null */
